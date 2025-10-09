@@ -1,0 +1,10 @@
+{
+  "iconDefinitions": {
+    "tw-icon": {
+      "iconPath": "./src/tw-icon.png"
+    }
+  },
+  "fileExtensions": {
+    "tw": "tw-icon"
+  }
+}

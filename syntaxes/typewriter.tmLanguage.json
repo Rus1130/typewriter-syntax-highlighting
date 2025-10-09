@@ -1,0 +1,35 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Typewriter",
+	"patterns": [
+		{ "include": "#comment" },
+        { "include": "#tags" }
+	],
+	"repository": {
+        "tags": {
+            "patterns": [
+                {
+                    "name": "tag.tw",
+                    "match": "\\[(newline|linebreak|newpage|speeddefault|speed1|speed2|speed3|speed4|speed5|sleep|typewriter-complete)\\]"
+                }
+            ]
+        },
+        "comment": {
+            "patterns": [
+                {
+                    "name": "comment.block.tw",
+                    "begin": "\\{\\{#",
+                    "beginCaptures": {
+                        "0": { "name": "punctuation.definition.comment.begin.tw" }
+                    },
+                    "end": "#\\}\\}",
+                    "endCaptures": {
+                        "0": { "name": "punctuation.definition.comment.end.tw" }
+                    },
+                    "contentName": "comment.block.content.tw"
+                }
+            ]
+        }
+	},
+	"scopeName": "source.tw"
+}
