@@ -2,15 +2,112 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Typewriter",
 	"patterns": [
-		{ "include": "#comment" },
+        { "include": "#bold" },
+        { "include": "#italic" },
+        { "include": "#underline" },
+        { "include": "#strikethrough" },
+        { "include": "#text" },
+        { "include": "#comment" },
         { "include": "#tags" }
 	],
-	"repository": {
+    "repository": {
+        "text": {
+            "patterns": [
+                {
+                    "name": "text.plain.tw",
+                    "match": "[^\\[\\]\\{\\}\\*]+"
+                }
+            ]
+        },
+        "strikethrough": {
+            "patterns": [
+                {
+                    "name": "style.strikethrough.tw",
+                    "begin": "-",
+                    "beginCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "end": "-",
+                    "endCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "patterns": [
+                        { "include": "#tags" },
+                        { "include": "#bold" },
+                        { "include": "#italic" },
+                        { "include": "#underline" }
+                    ]
+                }
+            ]
+        },
+        "underline": {
+            "patterns": [
+                {
+                    "name": "style.underline.tw",
+                    "begin": "_",
+                    "beginCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "end": "_",
+                    "endCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "patterns": [
+                        { "include": "#tags" },
+                        { "include": "#bold" },
+                        { "include": "#italic" },
+                        { "include": "#strikethrough" }
+                    ]
+                }
+            ]
+        },
+        "bold": {
+            "patterns": [
+                {
+                    "name": "style.bold.tw",
+                    "begin": "\\*",
+                    "beginCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "end": "\\*",
+                    "endCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "patterns": [
+                        { "include": "#tags" },
+                        { "include": "#italic" },
+                        { "include": "#underline" },
+                        { "include": "#strikethrough" }
+                    ]
+                }
+            ]
+        },
+        "italic": {
+            "patterns": [
+                {
+                    "name": "style.italic.tw",
+                    "begin": "/",
+                    "beginCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "end": "/",
+                    "endCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "patterns": [
+                        { "include": "#tags" },
+                        { "include": "#bold" },
+                        { "include": "#underline" },
+                        { "include": "#strikethrough" }
+                    ]
+                }
+            ]
+        },
         "tags": {
             "patterns": [
                 {
                     "name": "tag.tw",
-                    "match": "\\[(newline|linebreak|newpage|speeddefault|speed1|speed2|speed3|speed4|speed5|sleep|typewriter-complete)\\]"
+                    "match": "\\[(newline|linebreak|sleep|speed1|speed2|speed3|speed4|speed5|newpage|speeddefault|function)\\]"
                 }
             ]
         },
@@ -30,6 +127,6 @@
                 }
             ]
         }
-	},
-	"scopeName": "source.tw"
+    },
+    "scopeName": "source.tw"
 }

@@ -2,43 +2,93 @@
     "name": "typewriter",
     "displayName": "typewriter syntax highlighting",
     "description": "highlights typewriter markdown",
-     "version": "0.0.1",
+    "version": "0.0.1",
     "engines": {
         "vscode": "^1.104.0"
     },
     "categories": [
         "Programming Languages"
     ],
+    "main": "./client/extension.js",
     "contributes": {
         "iconThemes": [
-        {
-            "id": "typewriter",
-            "label": "Typewriter",
-            "path": "./tw-icon-theme.json"
-        }
-    ],
-    "configurationDefaults": {
-        "editor.tokenColorCustomizations": {
-            "textMateRules": [
-                {
-                    "scope": "tag.tw",
-                    "settings": {
-                        "foreground": "#b0ccff"
+            {
+                "id": "typewriter",
+                "label": "Typewriter",
+                "path": "./tw-icon-theme.json"
+            }
+        ],
+        "configurationDefaults": {
+            "editor.tokenColorCustomizations": {
+                "textMateRules": [
+                    {
+                        "scope": "text.plain.tw",
+                        "settings": {
+                            "foreground": "#CCCCCC"
+                        }
+                    },
+                    {
+                        "scope": "style.strikethrough.tw",
+                        "settings": {
+                            "fontStyle": "strikethrough",
+                            "foreground" :"#CCCCCC"
+                        }
+                    },
+                    {
+                        "scope": "style.underline.tw",
+                        "settings": {
+                            "fontStyle": "underline",
+                            "foreground" :"#CCCCCC"
+                        }
+                    },
+                    {
+                        "scope": "style.bold.tw",
+                        "settings": {
+                            "fontStyle": "bold",
+                            "foreground" :"#CCCCCC"
+                        }
+                    },
+                    {
+                        "scope": "style.italic.tw",
+                        "settings": {
+                            "fontStyle": "italic",
+                            "foreground" :"#CCCCCC"
+                        }
+                    },
+                    {
+                        "scope": "tag.tw",
+                        "settings": {
+                            "foreground": "#b0ccff",
+                            "fontStyle": ""
+                        }
                     }
-                }
-            ]
-        }
+                ]
+            }
+        },
+        "languages": [
+            {
+                "id": "typewriter",
+                "aliases": [
+                    "Typewriter",
+                    "typewriter"
+                ],
+                "extensions": [
+                    ".tw"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "typewriter",
+                "scopeName": "source.tw",
+                "path": "./syntaxes/typewriter.tmLanguage.json"
+            }
+        ]
     },
-    "languages": [{
-        "id": "typewriter",
-        "aliases": ["Typewriter", "typewriter"],
-        "extensions": [".tw"],
-        "configuration": "./language-configuration.json"
-    }],
-        "grammars": [{
-            "language": "typewriter",
-            "scopeName": "source.tw",
-            "path": "./syntaxes/typewriter.tmLanguage.json"
-        }]
+    "dependencies": {
+        "vscode-languageclient": "^9.0.1",
+        "vscode-languageserver": "^9.0.1",
+        "vscode-languageserver-textdocument": "^1.0.12"
     }
 }
