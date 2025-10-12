@@ -31,6 +31,7 @@ const TAGS = [
     { label: "speed3", detail: "Sets speed to speed 3", documentation: "[speed3]" },
     { label: "speed4", detail: "Sets speed to speed 4", documentation: "[speed4]" },
     { label: "speed5", detail: "Sets speed to speed 5", documentation: "[speed5]" },
+    { label: "speeddefault", detail: "Sets speed to default speed", documentation: "[speeddefault]" },
 ];
 
 function sendError(uri, message, line, startPos, endPos) {

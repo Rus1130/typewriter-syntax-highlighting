@@ -1,7 +1,7 @@
 {
   "iconDefinitions": {
     "tw-icon": {
-      "iconPath": "./src/tw-icon.svg"
+      "iconPath": "./tw-icon.svg"
     }
   },
   "fileExtensions": {

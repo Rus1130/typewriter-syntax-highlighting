@@ -19,7 +19,7 @@
             {
                 "id": "typewriter",
                 "label": "Typewriter",
-                "path": "./tw-icon-theme.json"
+                "path": "./fileicons/tw-icon-theme.json"
             }
         ],
         "configurationDefaults": {
