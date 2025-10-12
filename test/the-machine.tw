@@ -10,7 +10,7 @@ The number "6" prints to the screen. All is well. I run my program again.[newlin
 I run it again. "666". Wonderful.[newline]
 Again. "6[speed4],[speeddefault]666". Excellent.[newline]
 /Again./ "66[speed4],[speeddefault]666". /Perfect/.[newline]
-*/Again!/* "666[speed4],[speeddefault]666".[linebreak]
+/*Again!*/ "666[speed4],[speeddefault]666".[linebreak]
 
 [sleep].[sleep].[sleep].[linebreak]
 
@@ -45,4 +45,4 @@ I get up, and I walk to it. The machine is on.[linebreak]
 
 The screen glows a faint white, from where it says:[linebreak]
 
-[sleep][speed2]"What is your favorite vegetable?"[speeddefault][linebreak][sleep][sleep][typewriter-complete]
+[sleep][speed2]"What is your favorite vegetable?"[speeddefault][linebreak][sleep][sleep][function]

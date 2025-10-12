@@ -2,66 +2,12 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Typewriter",
 	"patterns": [
-        { "include": "#bold" },
-        { "include": "#italic" },
-        { "include": "#underline" },
-        { "include": "#strikethrough" },
-        { "include": "#text" },
+        { "include": "#formatting" },
         { "include": "#comment" },
         { "include": "#tags" }
 	],
     "repository": {
-        "text": {
-            "patterns": [
-                {
-                    "name": "text.plain.tw",
-                    "match": "[^\\[\\]\\{\\}\\*]+"
-                }
-            ]
-        },
-        "strikethrough": {
-            "patterns": [
-                {
-                    "name": "style.strikethrough.tw",
-                    "begin": "-",
-                    "beginCaptures": {
-                        "0": { "name": "comment.block.content.tw" }
-                    },
-                    "end": "-",
-                    "endCaptures": {
-                        "0": { "name": "comment.block.content.tw" }
-                    },
-                    "patterns": [
-                        { "include": "#tags" },
-                        { "include": "#bold" },
-                        { "include": "#italic" },
-                        { "include": "#underline" }
-                    ]
-                }
-            ]
-        },
-        "underline": {
-            "patterns": [
-                {
-                    "name": "style.underline.tw",
-                    "begin": "_",
-                    "beginCaptures": {
-                        "0": { "name": "comment.block.content.tw" }
-                    },
-                    "end": "_",
-                    "endCaptures": {
-                        "0": { "name": "comment.block.content.tw" }
-                    },
-                    "patterns": [
-                        { "include": "#tags" },
-                        { "include": "#bold" },
-                        { "include": "#italic" },
-                        { "include": "#strikethrough" }
-                    ]
-                }
-            ]
-        },
-        "bold": {
+        "formatting": {
             "patterns": [
                 {
                     "name": "style.bold.tw",
@@ -73,17 +19,12 @@
                     "endCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
+                    "contentName": "style.bold.content.tw",
                     "patterns": [
-                        { "include": "#tags" },
-                        { "include": "#italic" },
-                        { "include": "#underline" },
-                        { "include": "#strikethrough" }
+                        { "include": "#formatting" },
+                        { "include": "#tags" }
                     ]
-                }
-            ]
-        },
-        "italic": {
-            "patterns": [
+                },
                 {
                     "name": "style.italic.tw",
                     "begin": "/",
@@ -94,12 +35,51 @@
                     "endCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
+                    "contentName": "style.italic.content.tw",
                     "patterns": [
-                        { "include": "#tags" },
-                        { "include": "#bold" },
-                        { "include": "#underline" },
-                        { "include": "#strikethrough" }
+                        { "include": "#formatting" },
+                        { "include": "#tags" }
                     ]
+                },
+                {
+                    "name": "style.underline.tw",
+                    "begin": "_",
+                    "beginCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "end": "_",
+                    "endCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "contentName": "style.underline.content.tw",
+                    "patterns": [
+                        { "include": "#formatting" },
+                        { "include": "#tags" }
+                    ]
+                },
+                {
+                    "name": "style.strike.tw",
+                    "begin": "-",
+                    "beginCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "end": "-",
+                    "endCaptures": {
+                        "0": { "name": "comment.block.content.tw" }
+                    },
+                    "contentName": "style.strike.content.tw",
+                    "patterns": [
+                        { "include": "#formatting" },
+                        { "include": "#tags" }
+                    ]
+                }
+            ]
+        },
+        "text": {
+            "patterns": [
+                {
+                    "name": "text.plain.tw",
+                    "match": "[^\\[\\]\\{\\}\\*]+"
                 }
             ]
         },

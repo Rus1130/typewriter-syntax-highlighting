@@ -16,7 +16,7 @@ connection.onInitialize(() => ({
         textDocumentSync: documents.syncKind,
         completionProvider: {
             triggerCharacters: ['['], // 👈 trigger IntelliSense when > is typed
-        },
+        }
     }
 }));
 
@@ -74,7 +74,6 @@ documents.onDidChangeContent(change => {
     const lines = text.split(/\r?\n/g);
     const uri = change.document.uri;
 
-    let diagnostics = [];
     connection.sendDiagnostics({ uri: uri, diagnostics: [] }); // Clear previous diagnostics
 
     lines.forEach((line, i) => {

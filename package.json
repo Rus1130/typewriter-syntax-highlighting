@@ -32,38 +32,34 @@
                         }
                     },
                     {
-                        "scope": "style.strikethrough.tw",
+                        "scope": "tag.tw",
                         "settings": {
-                            "fontStyle": "strikethrough",
-                            "foreground": "#CCCCCC"
-                        }
-                    },
-                    {
-                        "scope": "style.underline.tw",
-                        "settings": {
-                            "fontStyle": "underline",
-                            "foreground": "#CCCCCC"
+                            "foreground": "#b0ccff",
+                            "fontStyle": ""
                         }
                     },
                     {
                         "scope": "style.bold.tw",
                         "settings": {
-                            "fontStyle": "bold",
-                            "foreground": "#CCCCCC"
+                            "fontStyle": "bold"
                         }
                     },
                     {
                         "scope": "style.italic.tw",
                         "settings": {
-                            "fontStyle": "italic",
-                            "foreground": "#CCCCCC"
+                            "fontStyle": "italic"
                         }
                     },
                     {
-                        "scope": "tag.tw",
+                        "scope": "style.underline.tw",
                         "settings": {
-                            "foreground": "#b0ccff",
-                            "fontStyle": ""
+                            "fontStyle": "underline"
+                        }
+                    },
+                    {
+                        "scope": "style.strike.tw",
+                        "settings": {
+                            "fontStyle": "strikethrough"
                         }
                     }
                 ]
