@@ -6,8 +6,12 @@
     "engines": {
         "vscode": "^1.104.0"
     },
+    "publisher": "Rus1130",
     "categories": [
         "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:typewriter"
     ],
     "main": "./client/extension.js",
     "contributes": {
@@ -31,28 +35,28 @@
                         "scope": "style.strikethrough.tw",
                         "settings": {
                             "fontStyle": "strikethrough",
-                            "foreground" :"#CCCCCC"
+                            "foreground": "#CCCCCC"
                         }
                     },
                     {
                         "scope": "style.underline.tw",
                         "settings": {
                             "fontStyle": "underline",
-                            "foreground" :"#CCCCCC"
+                            "foreground": "#CCCCCC"
                         }
                     },
                     {
                         "scope": "style.bold.tw",
                         "settings": {
                             "fontStyle": "bold",
-                            "foreground" :"#CCCCCC"
+                            "foreground": "#CCCCCC"
                         }
                     },
                     {
                         "scope": "style.italic.tw",
                         "settings": {
                             "fontStyle": "italic",
-                            "foreground" :"#CCCCCC"
+                            "foreground": "#CCCCCC"
                         }
                     },
                     {
@@ -87,6 +91,7 @@
         ]
     },
     "dependencies": {
+        "vsce": "^2.15.0",
         "vscode-languageclient": "^9.0.1",
         "vscode-languageserver": "^9.0.1",
         "vscode-languageserver-textdocument": "^1.0.12"
