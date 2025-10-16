@@ -4,18 +4,27 @@
 	"patterns": [
         { "include": "#formatting" },
         { "include": "#comment" },
-        { "include": "#tags" }
+        { "include": "#tags" },
+        { "include": "#escaped" }
 	],
     "repository": {
+        "escaped": {
+            "patterns": [
+                {
+                    "name": "comment.block.content.tw",
+                    "match": "\\\\(?=(\\*|\\/|-|_))"
+                }
+            ]
+        },
         "formatting": {
             "patterns": [
                 {
                     "name": "style.bold.tw",
-                    "begin": "\\*",
+                    "begin": "(?<!\\\\)\\*",
                     "beginCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
-                    "end": "\\*",
+                    "end": "(?<!\\\\)\\*",
                     "endCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
@@ -27,11 +36,11 @@
                 },
                 {
                     "name": "style.italic.tw",
-                    "begin": "/",
+                    "begin": "(?<!\\\\)/",
                     "beginCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
-                    "end": "/",
+                    "end": "(?<!\\\\)/",
                     "endCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
@@ -43,11 +52,11 @@
                 },
                 {
                     "name": "style.underline.tw",
-                    "begin": "_",
+                    "begin": "(?<!\\\\)_",
                     "beginCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
-                    "end": "_",
+                    "end": "(?<!\\\\)_",
                     "endCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
@@ -59,11 +68,11 @@
                 },
                 {
                     "name": "style.strike.tw",
-                    "begin": "-",
+                    "begin": "(?<!\\\\)-",
                     "beginCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
-                    "end": "-",
+                    "end": "(?<!\\\\)-",
                     "endCaptures": {
                         "0": { "name": "comment.block.content.tw" }
                     },
