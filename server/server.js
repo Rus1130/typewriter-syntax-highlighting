@@ -30,7 +30,7 @@ const TAGS = [
     { label: "speed", detail: "Overrides the current character speed to a number. Defaults to the character speed if argument is NaN", documentation: "[speed 70]" },
     { label: "speeddefault", detail: "Removes the override of the [speed] tag", documentation: "[speeddefault]" },
     { label: "color", detail: "Changes the text color. Accepts hex (#RRGGBB) or RGB (R G B) format", documentation: "[color #ff0000]\n[color 255 0 0]" },
-    { label: "bgcolor", detail: "Changes the background color. Accepts hex (#RRGGBB) or RGB (R G B) format", documentation: "[bgcolor #00ff00]\n[bgcolor 0 255 0]" },
+    { label: "background", detail: "Changes the background color. Accepts hex (#RRGGBB) or RGB (R G B) format", documentation: "[background #00ff00]\n[background 0 255 0]" },
     { label: "resetcolor", detail: "Resets the text color to default", documentation: "[resetcolor]" },
     { label: "resetbg", detail: "Resets the background color to default", documentation: "[resetbg]" }
 ];
@@ -120,7 +120,7 @@ documents.onDidChangeContent(change => {
                 }
             }
 
-            if (tagName === "color" || tagName === "bgcolor") {
+            if (tagName === "color" || tagName === "background") {
                 const argStr = args.join(" ");
                 const isHex = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(argStr);
                 const isRGB =
@@ -149,7 +149,7 @@ connection.onDocumentColor(({ textDocument }) => {
     const uri = textDocument.uri;
     const text = documents.get(uri).getText();
 
-    const colorTagRegex = /(?<!\\)\[(bg){0,1}color\s+(#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|(\d{1,3}\s+\d{1,3}\s+\d{1,3}))(?<!\\)\]/g;
+    const colorTagRegex = /(?<!\\)\[(color|background)\s+(#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|(\d{1,3}\s+\d{1,3}\s+\d{1,3}))(?<!\\)\]/g;
     const colors = [];
     let match;
 
