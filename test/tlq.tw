@@ -1,6 +1,6 @@
-Press SPACE to pause.[sleep][sleep][sleep][newpage]
+Press SPACE to pause.[sleep 2400][newpage]
 
-[sleep]The last question was asked for the first time, half in jest, on May 21, 2061, at a time when humanity first stepped into the light. The question came about as a result of a five\-dollar bet over highballs, and it happened this way:[linebreak]
+[sleep 800]The last question was asked for the first time, half in jest, on May 21, 2061, at a time when humanity first stepped into the light. The question came about as a result of a five\-dollar bet over highballs, and it happened this way:[linebreak]
 
 Alexander Adell and Bertram Lupov were two of the faithful attendants of Multivac. As well as any human beings could, they knew what lay behind the cold, clicking, flashing face — miles and miles of face — of that giant computer. They had at least a vague notion of the general plan of relays and circuits that had long since grown past the point where any single human could possibly have a firm grasp of the whole.[linebreak]
 
@@ -84,7 +84,7 @@ Multivac fell dead and silent. The slow flashing of lights ceased, the distant s
 
 Then, just as the frightened technicians felt they could hold their breath no longer, there was a sudden springing to life of the teletype attached to that portion of Multivac. Five words were printed:[linebreak]
 
-[speed1]INSUFFICIENT DATA FOR MEANINGFUL ANSWER.[speeddefault][linebreak][sleep]
+[speed 320]INSUFFICIENT DATA FOR MEANINGFUL ANSWER.[speeddefault][linebreak][sleep 800]
 
 "No bet," whispered Lupov. They left hurriedly.[linebreak]
 
@@ -92,11 +92,11 @@ By next morning, the two, plagued with throbbing head and cottony mouth, had for
 
 
 
-[sleep][sleep][newpage]
+[sleep 1600][newpage]
 
 
 
-[sleep]Jerrodd, Jerrodine, and Jerrodette I and II watched the starry picture in the visiplate change as the passage through hyperspace was completed in its non\-time lapse. At once, the even powdering of stars gave way to the predominance of a single bright shining disk, the size of a marble, centered on the viewing\-screen.[linebreak]
+[sleep 800]Jerrodd, Jerrodine, and Jerrodette I and II watched the starry picture in the visiplate change as the passage through hyperspace was completed in its non\-time lapse. At once, the even powdering of stars gave way to the predominance of a single bright shining disk, the size of a marble, centered on the viewing\-screen.[linebreak]
 
 "That's X\-23," said Jerrodd confidently. His thin hands clamped tightly behind his back and the knuckles whitened.[linebreak]
 
@@ -156,17 +156,17 @@ Jerrodine said, "And now, children, it's time for bed. We'll be in our new home 
 
 Jerrodd read the words on the cellufilm again before destroying it:[linebreak]
 
-[speed1]INSUFFICIENT DATA FOR MEANINGFUL ANSWER.[speeddefault][linebreak][sleep]
+[speed 320]INSUFFICIENT DATA FOR MEANINGFUL ANSWER.[speeddefault][linebreak][sleep 800]
 
 He shrugged and looked at the visiplate. X\-23 was just ahead.
 
 
 
-[sleep][sleep][newpage]
+[sleep 1600][newpage]
 
 
 
-[sleep]VJ\-23X of Lameth stared into the black depths of the three\-dimensional, small\-scale map of the Galaxy and said, "Are we ridiculous, I wonder in being so concerned about the matter?"[linebreak]
+[sleep 800]VJ\-23X of Lameth stared into the black depths of the three\-dimensional, small\-scale map of the Galaxy and said, "Are we ridiculous, I wonder in being so concerned about the matter?"[linebreak]
 
 MQ\-17J of Nicron shook his head. "I think not. You know the Galaxy will be filled in five years at the present rate of expansion."[linebreak]
 
@@ -226,7 +226,7 @@ VJ\-23X looked startled and said at once, "Oh, say, I didn't really mean to have
 
 The sound of the Galactic AC startled them into silence. Its voice came thin and beautiful out of the small AC\-contact on the desk. It said:[linebreak]
 
-[speed1]THERE IS INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak][sleep]
+[speed 320]THERE IS INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak][sleep 800]
 
 VJ\-23X said, "See!"[linebreak]
 
@@ -234,11 +234,11 @@ The two men thereupon returned to the question of the report they were to make t
 
 
 
-[sleep][sleep][newpage]
+[sleep 1600][newpage]
 
 
 
-[sleep]Zee Prime's mind spanned the new Galaxy with a faint interest in the countless twists of stars that powdered it. He had never seen this one before. Would he ever see them all? So many of them, each with its load of humanity. —But a load that was almost a dead weight. More and more, the real essence of men was to be found out here, in space.[linebreak]
+[sleep 800]Zee Prime's mind spanned the new Galaxy with a faint interest in the countless twists of stars that powdered it. He had never seen this one before. Would he ever see them all? So many of them, each with its load of humanity. —But a load that was almost a dead weight. More and more, the real essence of men was to be found out here, in space.[linebreak]
 
 Minds, not bodies! The immortal bodies remained back on the planets, in suspension over the eons. Sometimes they roused for material activity but that was growing rarer. Few new individuals were coming into existence to join the incredibly mighty throng, but what matter? There was little room in the Universe for new individuals.[linebreak]
 
@@ -278,17 +278,17 @@ Nor could anyone, for the day had long since passed, Zee Prime knew, when any ma
 
 The Universal AC interrupted Zee Prime's wandering thoughts, not with words, but with guidance. Zee Prime's mentality was guided into the dim sea of Galaxies and one in particular enlarged into stars.[linebreak]
 
-A thought came, infinitely distant, but infinitely clear. [speed2]"THIS IS THE ORIGINAL GALAXY OF MAN."[speeddefault][linebreak]
+A thought came, infinitely distant, but infinitely clear. [speed 195]"THIS IS THE ORIGINAL GALAXY OF MAN."[speeddefault][linebreak]
 
 But it was the same after all, the same as any other, and Zee Prime stifled his disappointment.[linebreak]
 
 Dee Sub Wun, whose mind had accompanied the other, said suddenly, "And is one of these stars the original star of Man?"[linebreak]
 
-The Universal AC said, [speed2]"MAN'S ORIGINAL STAR HAS GONE NOVA. IT IS A WHITE DWARF"[speeddefault][linebreak]
+The Universal AC said, [speed 195]"MAN'S ORIGINAL STAR HAS GONE NOVA. IT IS A WHITE DWARF"[speeddefault][linebreak]
 
 "Did the men upon it die?" asked Zee Prime, startled and without thinking.[linebreak]
 
-The Universal AC said, [speed2]"A NEW WORLD, AS IN SUCH CASES WAS CONSTRUCTED FOR THEIR PHYSICAL BODIES IN TIME."[speeddefault][linebreak]
+The Universal AC said, [speed 195]"A NEW WORLD, AS IN SUCH CASES WAS CONSTRUCTED FOR THEIR PHYSICAL BODIES IN TIME."[speeddefault][linebreak]
 
 "Yes, of course," said Zee Prime, but a sense of loss overwhelmed him even so. His mind released its hold on the original Galaxy of Man, let it spring back and lose itself among the blurred pin points. He never wanted to see it again.[linebreak]
 
@@ -308,7 +308,7 @@ Dee Sub Wun said in amusement, "You're asking how entropy might be reversed in d
 
 And the Universal AC answered:[linebreak]
 
-[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak][sleep]
+[speed 320]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak][sleep 800]
 
 Zee Prime's thoughts fled back to his own Galaxy. He gave no further thought to Dee Sub Wun, whose body might be waiting on a Galaxy a trillion light\-years away, or on the star next to Zee Prime's own. It didn't matter.[linebreak]
 
@@ -316,11 +316,11 @@ Unhappily, Zee Prime began collecting interstellar hydrogen out of which to buil
 
 
 
-[sleep][sleep][newpage]
+[sleep 1600][newpage]
 
 
 
-[sleep]Man considered with himself, for in a way, Man, mentally, was one. He consisted of a trillion, trillion, trillion ageless bodies, each in its place, each resting quiet and incorruptible, each cared for by perfect automatons, equally incorruptible, while the minds of all the bodies freely melted one into the other, indistinguishable.[linebreak]
+[sleep 800]Man considered with himself, for in a way, Man, mentally, was one. He consisted of a trillion, trillion, trillion ageless bodies, each in its place, each resting quiet and incorruptible, each cared for by perfect automatons, equally incorruptible, while the minds of all the bodies freely melted one into the other, indistinguishable.[linebreak]
 
 Man said, "The Universe is dying."[linebreak]
 
@@ -340,35 +340,35 @@ The Cosmic AC surrounded them but not in space. Not a fragment of it was in spac
 
 The Cosmic AC said,[linebreak]
 
-[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
+[speed 320]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
 
 Man said, "Collect additional data."[linebreak]
 
-The Cosmic AC said, [speed2]"I WILL DO SO. I HAVE BEEN DOING SO FOR A HUNDRED BILLION YEARS. MY PREDECESORS AND I HAVE BEEN ASKED THIS QUESTION MANY TIMES. ALL THE DATA I HAVE REMAINS INSUFFICIENT."[speeddefault][linebreak]
+The Cosmic AC said, [speed 195]"I WILL DO SO. I HAVE BEEN DOING SO FOR A HUNDRED BILLION YEARS. MY PREDECESORS AND I HAVE BEEN ASKED THIS QUESTION MANY TIMES. ALL THE DATA I HAVE REMAINS INSUFFICIENT."[speeddefault][linebreak]
 
 "Will there come a time," said Man, "when data will be sufficient or is the problem insoluble in all conceivable circumstances?"[linebreak]
 
-The Cosmic AC said, [speed2]"NO PROBLEM IS INSOLUBLE IN ALL CONCEIVABLE CIRCUMSTANCES."[speeddefault][linebreak]
+The Cosmic AC said, [speed 195]"NO PROBLEM IS INSOLUBLE IN ALL CONCEIVABLE CIRCUMSTANCES."[speeddefault][linebreak]
 
 Man said, "When will you have enough data to answer the question?"[linebreak]
 
 The Cosmic AC said,[linebreak]
 
-[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
+[speed 320]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
 
 "Will you keep working on it?" asked Man.[linebreak]
 
-The Cosmic AC said, [speed2]"I WILL."[speeddefault][linebreak]
+The Cosmic AC said, [speed 195]"I WILL."[speeddefault][linebreak]
 
-[sleep]Man said, "We shall wait."
-
-
-
-[sleep][sleep][sleep][newpage]
+[sleep 800]Man said, "We shall wait."
 
 
 
-[sleep]The stars and Galaxies died and snuffed out, and space grew black after ten trillion years of running down.[linebreak]
+[sleep 2400][newpage]
+
+
+
+[sleep 800]The stars and Galaxies died and snuffed out, and space grew black after ten trillion years of running down.[linebreak]
 
 One by one Man fused with AC, each physical body losing its mental identity in a manner that was somehow not a loss but a gain.[linebreak]
 
@@ -378,17 +378,17 @@ Man said, "AC, is this the end? Can this chaos not be reversed into the Universe
 
 AC said,[linebreak]
 
-[speed1]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
+[speed 320]THERE IS AS YET INSUFFICIENT DATA FOR A MEANINGFUL ANSWER.[speeddefault][linebreak]
 
 Man's last mind fused and only AC existed — and that in hyperspace.
 
 
 
-[sleep][sleep][newpage]
+[sleep 1600][newpage]
 
 
 
-[sleep]Matter and energy had ended and with it space and time. Even AC existed only for the sake of the one last question that it had never answered from the time a half\-drunken computer technician ten trillion years before had asked the question of a computer that was to AC far less than was a man to Man.[linebreak]
+[sleep 800]Matter and energy had ended and with it space and time. Even AC existed only for the sake of the one last question that it had never answered from the time a half\-drunken computer technician ten trillion years before had asked the question of a computer that was to AC far less than was a man to Man.[linebreak]
 
 All other questions had been answered, and until this last question was answered also, AC might not release his consciousness.[linebreak]
 
@@ -408,6 +408,6 @@ The consciousness of AC encompassed all of what had once been a Universe and bro
 
 And AC said,[linebreak]
 
-[speed1]LET THERE BE LIGHT![linebreak][sleep][sleep][sleep][sleep][sleep]
+[speed 320]LET THERE BE LIGHT![linebreak][sleep 4000]
 
-[speed3]And there [function]was light [sleep][sleep]—[sleep][sleep]
+[speed 205]And there [function]was light [sleep 1600]—[sleep 1600]
