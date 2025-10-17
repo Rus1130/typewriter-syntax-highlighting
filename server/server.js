@@ -101,6 +101,19 @@ documents.onDidChangeContent(change => {
 
             // --- argument validation ---
             if (tagName === "sleep" || tagName === "speed") {
+                if(args[0] === undefined) {
+                    diagnostics.push({
+                        severity: 2,
+                        range: {
+                            start: { line: i, character: startPos },
+                            end: { line: i, character: endPos }
+                        },
+                        message: `Missing argument in [${tagName}].`,
+                        source: 'typewriter-lsp'
+                    });
+                    continue;
+                }
+
                 if (args.length > 1 || (args[0] && isNaN(Number(args[0])))) {
                     let defaultAmount = tagName === "sleep" ? 1000 : 50;
                     diagnostics.push({
@@ -109,7 +122,7 @@ documents.onDidChangeContent(change => {
                             start: { line: i, character: startPos },
                             end: { line: i, character: endPos }
                         },
-                        message: `Invalid numeric argument in [${tagName} ${args.join(" ")}]. Will default to ${defaultAmount} ms.`,
+                        message: `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
                         source: 'typewriter-lsp'
                     });
                 }
