@@ -35,7 +35,15 @@ const TAGS = [
     { label: "resetbg", detail: "Resets the background color to default.", documentation: "[resetbg]" }
 ];
 
-connection.onCompletion((_params) => {
+connection.onCompletion((params) => {
+    const document = documents.get(params.textDocument.uri);
+    const text = document.getText();
+    const offset = document.offsetAt(params.position);
+    const charBefore = text[offset - 1];
+
+    // Only trigger completions if the user is immediately after `[`
+    if (charBefore !== "[") return [];
+
     return TAGS.map(tag => ({
         label: tag.label,
         kind: CompletionItemKind.Keyword,
@@ -55,6 +63,7 @@ connection.onCompletion((_params) => {
         insertTextFormat: InsertTextFormat.PlainText
     }));
 });
+
 
 documents.onDidChangeContent(change => {
     const text = change.document.getText();
