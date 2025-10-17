@@ -12,7 +12,7 @@
             "patterns": [
                 {
                     "name": "comment.block.content.tw",
-                    "match": "\\\\(?=(\\*|\\/|-|_))"
+                    "match": "\\\\(?=(\\*|\\/|-|_|\\[|\\]))"
                 }
             ]
         },
@@ -95,8 +95,13 @@
         "tags": {
             "patterns": [
                 {
-                    "name": "tag.tw",
-                    "match": "\\[(newline|linebreak|sleep|speed1|speed2|speed3|speed4|speed5|newpage|speeddefault|function)\\]"
+                "name": "tag.tw",
+                "match": "(?<!\\\\)\\[(newline|linebreak|sleep|speed|newpage|speeddefault|function)(?:\\s+(\\d+))?(?<!\\\\)\\]",
+                    "captures": {
+                        "0": { "name": "tag.tw" },
+                        "1": { "name": "tag.tw" },
+                        "2": { "name": "constant.numeric.tw" }
+                    }
                 }
             ]
         },

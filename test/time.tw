@@ -1,28 +1,28 @@
 {{# written 26 sept, 2025 #}}
-[sleep][sleep]Black, gold, silver.[sleep] The five eyes stare back at you.[linebreak]
+[sleep 1400]Black, gold, silver.[sleep 700] The five eyes stare back at you.[linebreak]
 
 Interlocking. Spinning. Revolving. It runs around the track of Time.[linebreak]
 
-Click. Click. Click. Click. It clicks like the clock[speed1][linebreak]
+Click. Click. Click. Click. It clicks like the clock[speed 25][linebreak]
 
 [speeddefault]that hangs in the basement of your grandparents' house.[linebreak]
 
-[speed2]Those long summer nights all those years ago.[speeddefault][linebreak][sleep][sleep][sleep]
+[speed 75]Those long summer nights all those years ago.[speeddefault][linebreak][sleep 2100]
 
-Spinning independently.[sleep] Without restriction.[sleep] It spins around the wheel[speed1][linebreak]
+Spinning independently.[sleep 700] Without restriction.[sleep 700] It spins around the wheel[speed 25][linebreak]
 
-[speeddefault]of Time. As Time flows, it clicks slower until it comes to[speed1][linebreak]
+[speeddefault]of Time. As Time flows, it clicks slower until it comes to[speed 25][linebreak]
 
-[speeddefault]a halt. The main wheel stops.[sleep] But the six continue[linebreak]
+[speeddefault]a halt. The main wheel stops.[sleep 700] But the six continue[linebreak]
 
-Until it is stopped by you.[sleep] You who keep it on your desk.[linebreak]
+Until it is stopped by you.[sleep 700] You who keep it on your desk.[linebreak]
 
 You keep it on your desk. You keep Time on your desk.[linebreak]
 
-Like the hourglasses of antiquity.[sleep] Unlike hourglasses, it keeps minutes, not hours.[linebreak]
+Like the hourglasses of antiquity.[sleep 700] Unlike hourglasses, it keeps minutes, not hours.[linebreak]
 
-But that minute of revolution is more fulfilling than watching falling sand.[linebreak][newline]
+But that minute of revolution is far more fulfilling than watching falling sand.[linebreak][newline]
 
-The six on the outside. The two on the inside. The inside is governed[speed1][linebreak]
+The six on the outside. The two on the inside. The inside is governed[speed 25][linebreak]
 
-[speeddefault]by the wheel of Time. But the wheel of Time is governed by you.[linebreak][sleep][sleep][typewriter-complete]
+[speeddefault]by the wheel of Time. But the wheel of Time is governed by you.[linebreak][sleep 1400][function]

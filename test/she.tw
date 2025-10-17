@@ -1,5 +1,5 @@
 {{# written 8 oct. 2025 #}}
-[sleep][sleep]Every day she gets up[newline]
+[sleep 1400]Every day she gets up[newline]
 and goes to work in the helium mine.[newline]
 She does not wish to fly away.[newline]
 With the dangers of helium mining,[newline]
@@ -7,4 +7,4 @@ it is always a possibility.[newline]
 Her shoes, filled with lead,[newline]
 slowly poison her.[newline]
 But she does not know.[newline]
-All she knows is the droning of the mine.[linebreak][sleep][function]
+All she knows is the droning of the mine.[linebreak][sleep 700][function]

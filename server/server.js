@@ -22,16 +22,12 @@ connection.onInitialize(() => ({
 
 const TAGS = [
     { label: "newline", detail: "Inserts a new line", documentation: "[newline]" },
-    { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines", documentation: "[linebreak]" },
+    { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines. But has the same speed as one newline", documentation: "[linebreak]" },
     { label: "newpage", detail: "Starts a new page", documentation: "[newpage]" },
-    { label: "sleep", detail: "Pauses typewriter", documentation: "[sleep]" },
+    { label: "sleep", detail: "Pauses typewriter for amount in ms. Defaults to 1000 if argument is NaN", documentation: "[sleep 20]" },
     { label: "function", detail: "Runs a specified function", documentation: "[function]" },
-    { label: "speed1", detail: "Sets speed to speed 1", documentation: "[speed1]" },
-    { label: "speed2", detail: "Sets speed to speed 2", documentation: "[speed2]" },
-    { label: "speed3", detail: "Sets speed to speed 3", documentation: "[speed3]" },
-    { label: "speed4", detail: "Sets speed to speed 4", documentation: "[speed4]" },
-    { label: "speed5", detail: "Sets speed to speed 5", documentation: "[speed5]" },
-    { label: "speeddefault", detail: "Sets speed to default speed", documentation: "[speeddefault]" },
+    { label: "speed", detail: "Overrides the current character speed to a number. Defaults to the character speed if argument is NaN", documentation: "[speed 70]" },
+    { label: "speeddefault", detail: "Removes the override of the [speed] tag", documentation: "[speeddefault]" },
 ];
 
 function sendError(uri, message, line, startPos, endPos) {
@@ -74,24 +70,63 @@ documents.onDidChangeContent(change => {
     const lines = text.split(/\r?\n/g);
     const uri = change.document.uri;
 
-    connection.sendDiagnostics({ uri: uri, diagnostics: [] }); // Clear previous diagnostics
+    const diagnostics = []; // Collect all warnings here
 
     lines.forEach((line, i) => {
-        if(line.includes("\\[") || line.includes("\\]")) {
-            sendError(uri, "Tags cannot be escaped.", i, line.indexOf("\\"), line.indexOf("\\") + 2);
-            return;
-        }
         let match;
-        const tagPattern = /\[(.*?)\]/g;
+        // Match tags like [sleep 700], [speed 150], [linebreak], etc.
+        const tagPattern = /\[([a-zA-Z]+)(?:\s+([^\]]+))?\]/g;
+
         while ((match = tagPattern.exec(line)) !== null) {
-            const tag = match[1];
+            const fullTag = match[0];
+            const tagName = match[1];
+            const arg = match[2];
             const startPos = match.index;
-            const endPos = match.index + match[0].length;
-            if (!TAGS.some(t => t.label === tag)) {
-                sendWarning(uri, `Unknown tag: [${tag}]. This will be displayed as text.`, i, startPos, endPos);
+            const endPos = match.index + fullTag.length;
+
+            const knownTag = TAGS.some(t => t.label === tagName);
+
+            const tagsThatRecommendArgs = ["sleep", "speed"];
+
+            if (!knownTag) {
+                diagnostics.push({  
+                    severity: 2, // Warning
+                    range: {
+                        start: { line: i, character: startPos },
+                        end: { line: i, character: endPos }
+                    },
+                    message: `Unknown tag: [${tagName}].`,
+                    source: 'typewriter-lsp'
+                });
+            } else if (arg !== undefined && isNaN(Number(arg))) {
+                let defaultAmount = 0;
+                if(tagName === "sleep") defaultAmount = 1000;
+                if(tagName === "speed") defaultAmount = 50;
+                diagnostics.push({
+                    severity: 2,
+                    range: {
+                        start: { line: i, character: startPos },
+                        end: { line: i, character: endPos }
+                    },
+                    message: `Invalid numeric argument in tag [${tagName} ${arg}]. Will default to ${defaultAmount} ms.`,
+                    source: 'typewriter-lsp'
+                });
+            } else if (arg === undefined && tagsThatRecommendArgs.includes(tagName)) {
+                diagnostics.push({
+                    severity: 3,
+                    range: {
+                        start: { line: i, character: startPos },
+                        end: { line: i, character: endPos }
+                    },
+                    message: `Tag [${tagName}] usually takes a numeric argument.`,
+                    source: 'typewriter-lsp'
+                });
             }
         }
     });
+
+    // Send all collected diagnostics at once
+    connection.sendDiagnostics({ uri, diagnostics });
 });
 
 documents.listen(connection);
