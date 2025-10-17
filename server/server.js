@@ -29,7 +29,10 @@ const TAGS = [
     { label: "function", detail: "Runs a specified function", documentation: "[function]" },
     { label: "speed", detail: "Overrides the current character speed to a number. Defaults to the character speed if argument is NaN", documentation: "[speed 70]" },
     { label: "speeddefault", detail: "Removes the override of the [speed] tag", documentation: "[speeddefault]" },
-    { label: "color", detail: "Changes the text color. Accepts hex (#RRGGBB) or RGB (R G B) format", documentation: "[color #ff0000]\n[color 255 0 0]" }
+    { label: "color", detail: "Changes the text color. Accepts hex (#RRGGBB) or RGB (R G B) format", documentation: "[color #ff0000]\n[color 255 0 0]" },
+    { label: "bgcolor", detail: "Changes the background color. Accepts hex (#RRGGBB) or RGB (R G B) format", documentation: "[bgcolor #00ff00]\n[bgcolor 0 255 0]" },
+    { label: "resetcolor", detail: "Resets the text color to default", documentation: "[resetcolor]" },
+    { label: "resetbg", detail: "Resets the background color to default", documentation: "[resetbg]" }
 ];
 
 function sendError(uri, message, line, startPos, endPos) {
