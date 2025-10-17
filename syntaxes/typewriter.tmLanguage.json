@@ -96,11 +96,20 @@
             "patterns": [
                 {
                 "name": "tag.tw",
-                "match": "(?<!\\\\)\\[(newline|linebreak|sleep|speed|newpage|speeddefault|function)(?:\\s+(\\d+))?(?<!\\\\)\\]",
+                "match": "(?<!\\\\)\\[(newline|linebreak|sleep|speed|newpage|speeddefault|function|color|bgcolor)(?:\\s+(\\d+))?(?<!\\\\)\\]",
                     "captures": {
                         "0": { "name": "tag.tw" },
                         "1": { "name": "tag.tw" },
                         "2": { "name": "constant.numeric.tw" }
+                    }
+                },
+                {
+                    "name": "tag.color.tw",
+                    "match": "((?<!\\\\)\\[color)\\s+(#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|(\\d{1,3}\\s+\\d{1,3}\\s+\\d{1,3}))((?<!\\\\)\\])",
+                    "captures": {
+                        "0": { "name": "tag.tw" },
+                        "2": { "name": "color-value.tag.tw" },
+                        "1": { "name": "tag.tw" }
                     }
                 }
             ]

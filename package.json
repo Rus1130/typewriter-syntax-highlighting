@@ -26,6 +26,12 @@
             "editor.tokenColorCustomizations": {
                 "textMateRules": [
                     {
+                        "scope": "color-value.tag.tw",
+                        "settings": {
+                            "foreground": "#ffa172"
+                        }
+                    },
+                    {
                         "scope": "text.plain.tw",
                         "settings": {
                             "foreground": "#CCCCCC"
