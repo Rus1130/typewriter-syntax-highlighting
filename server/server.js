@@ -32,7 +32,8 @@ const TAGS = [
     { label: "color", detail: "Changes the text color. Accepts hex (#RRGGBB) or RGB (R G B) format. Displays error if format is incorrect.", documentation: "[color #ff0000]\n[color 255 0 0]" },
     { label: "background", detail: "Changes the background color. Accepts hex (#RRGGBB) or RGB (R G B) format. Displays error if format is incorrect.", documentation: "[background #00ff00]\n[background 0 255 0]" },
     { label: "resetcolor", detail: "Resets the text color to default.", documentation: "[resetcolor]" },
-    { label: "resetbg", detail: "Resets the background color to default.", documentation: "[resetbg]" }
+    { label: "resetbg", detail: "Resets the background color to default.", documentation: "[resetbg]" },
+    { label: "tab", detail: "Inserts 4 spaces. Optional number parameter to input a different number of spaces.", documentation: "[tab]" },
 ];
 
 connection.onCompletion((params) => {
@@ -63,7 +64,6 @@ connection.onCompletion((params) => {
         insertTextFormat: InsertTextFormat.PlainText
     }));
 });
-
 
 documents.onDidChangeContent(change => {
     const text = change.document.getText();
@@ -100,6 +100,20 @@ documents.onDidChangeContent(change => {
             }
 
             // --- argument validation ---
+            if(tagName === "tab") {
+                if(args[0] !== undefined && (isNaN(Number(args[0])) || Number(args[0]) < 1)) {
+                    diagnostics.push({
+                        severity: 2,
+                        range: {
+                            start: { line: i, character: startPos },
+                            end: { line: i, character: endPos }
+                        },
+                        message: `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
+                        source: 'typewriter-lsp'
+                    });
+                }
+                continue;
+            }
             if (tagName === "sleep" || tagName === "speed") {
                 if(args[0] === undefined) {
                     diagnostics.push({
