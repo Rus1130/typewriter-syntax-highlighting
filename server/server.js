@@ -24,6 +24,7 @@ connection.onInitialize(() => ({
 
 const TIME_CALC = new Map();
 const TAG_TOKENS = new Map();
+const LINE_DURATIONS = new Map();
 
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
@@ -145,6 +146,7 @@ connection.onHover((params) => {
     });
 
     if(!timecalc) return null;
+    if(!currentToken) return null;
 
     if(timecalc.char === undefined || timecalc.newline === undefined) return {
         contents: {
@@ -154,6 +156,8 @@ connection.onHover((params) => {
     }
 
     let tokenSpeed = calculateTokenTime(timecalc, currentToken);
+
+    let lineDuration = LINE_DURATIONS.get(uri)[line];
     return {
         contents: {
             kind: 'markdown',
@@ -166,7 +170,7 @@ connection.onHover((params) => {
                 "-----",
                 "```text",
                 "\u00A0",
-                `Total line speed: `,
+                `Line duration: ${lineDuration.atLeast ? "at least" : ""} ${lineDuration.duration} ms`,
                 "```"
             ].join("\n")
         }
@@ -223,6 +227,7 @@ documents.onDidChangeContent(change => {
     const uri = change.document.uri;
 
     TAG_TOKENS.set(uri, []);
+    LINE_DURATIONS.set(uri, []);
 
     const timecalcPattern = /\{\{#timecalc([\s\S]*?)#\}\}/g;
 
@@ -232,6 +237,42 @@ documents.onDidChangeContent(change => {
     } else {
         TIME_CALC.delete(uri);
     };
+
+    let blockMatch;
+    while ((blockMatch = timecalcPattern.exec(text)) !== null) {
+        const blockContent = blockMatch[1].trim();
+        const blockStart = blockMatch.index; // where the block begins in the file
+
+        // Convert block to JSON-like string
+        let jsonStr = blockContent
+            // add quotes around keys
+            .replace(/^(\s*)([a-zA-Z0-9_]+):/gm, '$1"$2":')
+            // replace single quotes with double quotes
+            .replace(/'/g, '"')
+            // add commas at line ends if missing and not before } or {
+            .replace(/([0-9"])\s*$/gm, '$1,')
+            .replace(/,(\s*[}\]])/g, '$1'); // remove trailing commas before closing braces
+
+        try {
+            const parsed = JSON.parse(`{${jsonStr}}`);
+            TIME_CALC.set(uri, parsed);
+        } catch (e) {
+            const before = text.slice(0, blockStart);
+            const line = before.split(/\r?\n/).length - 1;
+            const lineStart = before.lastIndexOf('\n') + 1;
+            const colStart = text.indexOf('timecalc', lineStart) - lineStart;
+
+            diagnostics.push({
+                severity: 1,
+                range: {
+                    start: { line, character: colStart },
+                    end: { line, character: colStart + 'timecalc'.length }
+                },
+                message: `Failed to parse timecalc block: ${e.message}`,
+                source: 'typewriter-lsp'
+            });
+        }
+    }
 
 
     const diagnostics = [];
@@ -333,43 +374,37 @@ documents.onDidChangeContent(change => {
                     });
                 }
             }
-        }
+        }   
     })
-    let blockMatch;
-    while ((blockMatch = timecalcPattern.exec(text)) !== null) {
-        const blockContent = blockMatch[1].trim();
-        const blockStart = blockMatch.index; // where the block begins in the file
 
-        // Convert block to JSON-like string
-        let jsonStr = blockContent
-            // add quotes around keys
-            .replace(/^(\s*)([a-zA-Z0-9_]+):/gm, '$1"$2":')
-            // replace single quotes with double quotes
-            .replace(/'/g, '"')
-            // add commas at line ends if missing and not before } or {
-            .replace(/([0-9"])\s*$/gm, '$1,')
-            .replace(/,(\s*[}\]])/g, '$1'); // remove trailing commas before closing braces
+    if (TIME_CALC.has(uri)) {
+        const timecalc = TIME_CALC.get(uri);
+        const lineDurations = [];
 
-        try {
-            const parsed = JSON.parse(`{${jsonStr}}`);
-            TIME_CALC.set(uri, parsed);
-        } catch (e) {
-            const before = text.slice(0, blockStart);
-            const line = before.split(/\r?\n/).length - 1;
-            const lineStart = before.lastIndexOf('\n') + 1;
-            const colStart = text.indexOf('timecalc', lineStart) - lineStart;
+        for (let lineNum = 0; lineNum < lines.length; lineNum++) {
+            const lineText = lines[lineNum];
+            const tokens = tokenizeLine(TAG_TOKENS.get(uri), lineText, lineNum);
+            
+            let totalLineTime = 0;
+            let atLeastFlag = false;
 
-            diagnostics.push({
-                severity: 1,
-                range: {
-                    start: { line, character: colStart },
-                    end: { line, character: colStart + 'timecalc'.length }
-                },
-                message: `Failed to parse timecalc block: ${e.message}`,
-                source: 'typewriter-lsp'
+            for (let token of tokens) {
+                const result = calculateTokenTime(timecalc, token);
+                if (typeof result.speed === 'number' && !isNaN(result.speed)) {
+                    totalLineTime += result.speed;
+                } else {
+                    atLeastFlag = true;
+                }
+            };
+            lineDurations.push({
+                duration: totalLineTime,
+                atLeast: atLeastFlag
             });
         }
+
+        LINE_DURATIONS.set(uri, lineDurations);
     }
+
 
     connection.sendDiagnostics({ uri, diagnostics });
 });

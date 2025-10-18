@@ -31,7 +31,8 @@
                     "contentName": "style.bold.content.tw",
                     "patterns": [
                         { "include": "#formatting" },
-                        { "include": "#tags" }
+                        { "include": "#tags" },
+                        { "include": "#comment" }
                     ]
                 },
                 {
@@ -47,7 +48,8 @@
                     "contentName": "style.italic.content.tw",
                     "patterns": [
                         { "include": "#formatting" },
-                        { "include": "#tags" }
+                        { "include": "#tags" },
+                        { "include": "#comment" }
                     ]
                 },
                 {
@@ -63,7 +65,8 @@
                     "contentName": "style.underline.content.tw",
                     "patterns": [
                         { "include": "#formatting" },
-                        { "include": "#tags" }
+                        { "include": "#tags" },
+                        { "include": "#comment" }
                     ]
                 },
                 {
@@ -79,7 +82,8 @@
                     "contentName": "style.strike.content.tw",
                     "patterns": [
                         { "include": "#formatting" },
-                        { "include": "#tags" }
+                        { "include": "#tags" },
+                        { "include": "#comment" }
                     ]
                 }
             ]
