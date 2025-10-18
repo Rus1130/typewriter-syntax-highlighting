@@ -18,8 +18,12 @@ connection.onInitialize(() => ({
             triggerCharacters: ['['], // 👈 trigger IntelliSense when > is typed
         },
         colorProvider: true,
+        hoverProvider: true,
     }
 }));
+
+const TIME_CALC = new Map();
+const TAG_TOKENS = new Map();
 
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
@@ -65,10 +69,170 @@ connection.onCompletion((params) => {
     }));
 });
 
+function tokenizeLine(tagTokens, textLine, lineNumber) {
+    const tokensOnLine = tagTokens.filter(t => t.line === lineNumber);
+    const parsedLine = [];
+
+    for (let i = 0; i < textLine.length; i++) {
+        const char = textLine[i];
+
+        // check if this character belongs to a known tag
+        const tag = tokensOnLine.find(t => i >= t.start && i <= t.end);
+
+        if (tag) {
+            // only push tag once (when we hit the start)
+            if (!parsedLine.includes(tag)) {
+                parsedLine.push(tag);
+            }
+            // skip ahead to tag end so we don’t repeat characters
+            i = tag.end;
+            continue;
+        }
+
+        // normal non-tag character
+        if(char !== '\n' && char !== '\r') parsedLine.push({ char, start: i, end: i });
+    }
+
+    return parsedLine;
+}
+
+connection.onHover((params) => {
+    const uri = params.textDocument.uri;
+    const document = documents.get(uri);
+    const text = document.getText();
+    const tagTokens = TAG_TOKENS.get(uri) || [];
+    const { line, character } = params.position;
+
+    // --- 1. Ignore comments ({{# ... #}}) ---
+    const commentPattern = /\{\{#([\s\S]*?)#\}\}/g;
+    let inComment = false;
+    let match;
+    while ((match = commentPattern.exec(text)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
+
+        // convert absolute offset to line/character
+        const startOffset = document.positionAt(start);
+        const endOffset = document.positionAt(end);
+
+        if (
+            (line > startOffset.line || (line === startOffset.line && character >= startOffset.character)) &&
+            (line < endOffset.line || (line === endOffset.line && character <= endOffset.character))
+        ) {
+            inComment = true;
+            break;
+        }
+    }
+    if (inComment) return null;
+
+    // if its an escaped style character, ignore
+    if (character > 0) {
+        const lineStartOffset = document.offsetAt({ line, character: 0 });
+        const charIndex = lineStartOffset + character;
+        if (["*", "-", "/", "_"].includes(text[charIndex]) && text[charIndex - 1] !== '\\') return null;
+    }
+
+    const lineText = document.getText({
+        start: { line: line, character: 0 },
+        end: { line: line + 1, character: 0 }
+    });
+
+    const timecalc = TIME_CALC.get(uri) || null;
+
+    let currentLine = tokenizeLine(tagTokens, lineText, line);
+    let currentToken = currentLine.find(t => {
+        return character >= t.start && character <= t.end;
+    });
+
+    if(!timecalc) return null;
+
+    if(timecalc.char === undefined || timecalc.newline === undefined) return {
+        contents: {
+            kind: 'markdown',
+            value: 'Not enough info to calculate time.'
+        }
+    }
+
+    let tokenSpeed = calculateTokenTime(timecalc, currentToken);
+    return {
+        contents: {
+            kind: 'markdown',
+            value: [
+                "```text",
+                `Token: ${wrapWithWhitespaceType(tokenSpeed.token)}`,
+                `Speed: ${tokenSpeed.speed} ms`,
+                "\u00A0",
+                "```",
+                "-----",
+                "```text",
+                "\u00A0",
+                `Total line speed: `,
+                "```"
+            ].join("\n")
+        }
+    }
+});
+
+function wrapWithWhitespaceType(char) {
+    let type = null;
+    if (char === ' ') type = 'space';
+    else if (char === '\t') type = 'tab';
+    else if (char === '\n') type = 'newline';
+    else if (char === '\r') type = 'carriage return';
+    else if (char === '\u00A0') type = 'non-breaking space';
+    else if (char === '\u200B') type = 'zero-width space';
+    else if (char === '\u3000') type = 'ideographic space';
+    else if (/^\s$/.test(char)) type = 'other whitespace';
+    return type == null ? char : "("+type+")";
+}
+
+function calculateTokenTime(timecalc, token){
+    let characterSpeed = "unknown";
+
+    let analyzedToken = '';
+
+    if(timecalc.char) {
+        characterSpeed = timecalc.char;
+        if(token.char) {
+            analyzedToken = token.char;
+            if(timecalc.custom[token.char]) characterSpeed = timecalc.custom[token.char];
+        } else {
+            analyzedToken = "["+token.name+"]";
+            if(token.name === "newline") characterSpeed = timecalc.newline;
+            else if(token.name === "linebreak") characterSpeed = timecalc.newline * 2;
+            else if(token.name === "tab") characterSpeed = timecalc.char;
+            else if(token.name === "sleep") {
+                characterSpeed = parseInt(token.args[0]) || "unknown";
+            } else {
+                characterSpeed = 0;
+            }
+        }
+        
+    }
+
+
+    return {
+        speed: characterSpeed,
+        token: analyzedToken
+    };
+}
+ 
 documents.onDidChangeContent(change => {
     const text = change.document.getText();
     const lines = text.split(/\r?\n/g);
     const uri = change.document.uri;
+
+    TAG_TOKENS.set(uri, []);
+
+    const timecalcPattern = /\{\{#timecalc([\s\S]*?)#\}\}/g;
+
+    // if it has a timecalc comment, create the entry if it doesn't exist
+    if (text.match(timecalcPattern)) {
+        if (!TIME_CALC.has(uri)) TIME_CALC.set(uri, {});
+    } else {
+        TIME_CALC.delete(uri);
+    };
+
 
     const diagnostics = [];
 
@@ -83,6 +247,14 @@ documents.onDidChangeContent(change => {
             const args = match[2] ? match[2].trim().split(/\s+/) : [];
             const startPos = match.index;
             const endPos = match.index + fullTag.length;
+
+            TAG_TOKENS.get(uri).push({
+                line: i,
+                start: startPos,
+                end: endPos,
+                name: tagName,
+                args: args
+            });
 
             const knownTag = TAGS.some(t => t.label === tagName);
 
@@ -162,7 +334,42 @@ documents.onDidChangeContent(change => {
                 }
             }
         }
-    });
+    })
+    let blockMatch;
+    while ((blockMatch = timecalcPattern.exec(text)) !== null) {
+        const blockContent = blockMatch[1].trim();
+        const blockStart = blockMatch.index; // where the block begins in the file
+
+        // Convert block to JSON-like string
+        let jsonStr = blockContent
+            // add quotes around keys
+            .replace(/^(\s*)([a-zA-Z0-9_]+):/gm, '$1"$2":')
+            // replace single quotes with double quotes
+            .replace(/'/g, '"')
+            // add commas at line ends if missing and not before } or {
+            .replace(/([0-9"])\s*$/gm, '$1,')
+            .replace(/,(\s*[}\]])/g, '$1'); // remove trailing commas before closing braces
+
+        try {
+            const parsed = JSON.parse(`{${jsonStr}}`);
+            TIME_CALC.set(uri, parsed);
+        } catch (e) {
+            const before = text.slice(0, blockStart);
+            const line = before.split(/\r?\n/).length - 1;
+            const lineStart = before.lastIndexOf('\n') + 1;
+            const colStart = text.indexOf('timecalc', lineStart) - lineStart;
+
+            diagnostics.push({
+                severity: 1,
+                range: {
+                    start: { line, character: colStart },
+                    end: { line, character: colStart + 'timecalc'.length }
+                },
+                message: `Failed to parse timecalc block: ${e.message}`,
+                source: 'typewriter-lsp'
+            });
+        }
+    }
 
     connection.sendDiagnostics({ uri, diagnostics });
 });

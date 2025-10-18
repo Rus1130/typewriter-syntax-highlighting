@@ -26,6 +26,25 @@
             "editor.tokenColorCustomizations": {
                 "textMateRules": [
                     {
+                        "scope": "custom.timecalc.comment.tw",
+                        "settings": {
+                            "foreground": "#BB9CF7"
+                        }
+                    },
+                    {
+                        "scope": "timecalc.comment.block.tw",
+                        "settings": {
+                            "foreground": "#48ff9a",
+                            "fontStyle": "bold"
+                        }
+                    },
+                    {
+                        "scope": "parameter.timecalc.comment.tw",
+                        "settings": {
+                            "foreground": "#F3A56A"
+                        }
+                    },
+                    {
                         "scope": "color-value.tag.tw",
                         "settings": {
                             "foreground": "#e59cff"

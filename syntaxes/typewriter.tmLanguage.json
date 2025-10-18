@@ -114,8 +114,77 @@
                 }
             ]
         },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.timecalc.tw",
+                    "match": "\"(?:[^\"\\\\]|\\\\.)*\""
+                },
+                {
+                    "name": "string.quoted.single.timecalc.tw",
+                    "match": "'(?:[^'\\\\]|\\\\.)*'"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.tw",
+                    "match": "\\b\\d+\\b"
+                }
+            ]
+        },
+        "timecalc": {
+            "patterns": [
+                {
+                    "name": "definition.timecalc.comment.tw",
+                    "match": "(char:|newline:)\\s*?(\\d+)",
+                    "captures": {
+                        "1": { "name": "parameter.timecalc.comment.tw" },
+                        "0": { "name": "constant.numeric.tw" }
+                    }
+                }
+            ]
+        },
+        "timecalc-custom": {
+            "patterns": [
+                {
+                    "name": "meta.custom.definition.timecalc.comment.tw",
+                    "begin": "(custom)(\\s*:\\s*)(\\{)",
+                    "beginCaptures": {
+                        "1": { "name": "custom.timecalc.comment.tw" }
+                    },
+                    "end": "(\\})",
+                    "endCaptures": {
+                        "1": { "name": "punctuation.definition.brace.end.timecalc.comment.tw" }
+                    },
+                    "contentName": "custom.definition.content.timecalc.comment.tw",
+                    "patterns": [
+                        { "include": "#strings" },
+                        { "include": "#number" }
+                    ]
+                }
+            ]
+        },
         "comment": {
             "patterns": [
+                {
+                    "name": "comment.block.timecalc.tw",
+                    "begin": "(\\{\\{#)(timecalc)",
+                    "beginCaptures": {
+                        "1": { "name": "punctuation.definition.comment.begin.tw" },
+                        "2": { "name": "timecalc.comment.block.tw" }
+                    },
+                    "end": "#\\}\\}",
+                    "endCaptures": {
+                        "0": { "name": "punctuation.definition.comment.end.tw" }
+                    },
+                    "contentName": "comment.block.content.tw",
+                    "patterns": [
+                        { "include": "#timecalc" },
+                        { "include": "#timecalc-custom" }
+                    ]
+                },
                 {
                     "name": "comment.block.tw",
                     "begin": "\\{\\{#",
