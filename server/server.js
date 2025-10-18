@@ -24,8 +24,8 @@ connection.onInitialize(() => ({
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
     { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines. However, it has the same speed as one newline.", documentation: "[linebreak]" },
-    { label: "speed", detail: "Overrides the current character speed to a number. Defaults to the character speed if argument is NaN.", documentation: "[speed 70]" },
-    { label: "sleep", detail: "Pauses typewriter for amount in ms. Defaults to 1000 if argument is NaN.", documentation: "[sleep 20]" },
+    { label: "speed", detail: "Overrides the current character speed to a number.", documentation: "[speed 70]" },
+    { label: "sleep", detail: "Pauses typewriter for amount in ms.", documentation: "[sleep 20]" },
     { label: "speeddefault", detail: "Removes the override of the [speed] tag.", documentation: "[speeddefault]" },
     { label: "newpage", detail: "Starts a new page.", documentation: "[newpage]" },
     { label: "function", detail: "Runs the function defined by onFunctionTag() in the Typewriter3 definition.", documentation: "[function]" },
@@ -33,7 +33,7 @@ const TAGS = [
     { label: "background", detail: "Changes the background color. Accepts hex (#RRGGBB) or RGB (R G B) format. Displays error if format is incorrect.", documentation: "[background #00ff00]\n[background 0 255 0]" },
     { label: "resetcolor", detail: "Resets the text color to default.", documentation: "[resetcolor]" },
     { label: "resetbg", detail: "Resets the background color to default.", documentation: "[resetbg]" },
-    { label: "tab", detail: "Inserts 4 spaces. Optional number parameter to input a different number of spaces.", documentation: "[tab]" },
+    { label: "tab", detail: "Inserts 4 spaces. Optional number parameter to input a different number of spaces.", documentation: "[tab]\n[tab 10]" },
 ];
 
 connection.onCompletion((params) => {
