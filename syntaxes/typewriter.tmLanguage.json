@@ -112,7 +112,7 @@
                     "match": "((?<!\\\\)\\[color|background)\\s+(#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|(\\d{1,3}\\s+\\d{1,3}\\s+\\d{1,3}))((?<!\\\\)\\])",
                     "captures": {
                         "0": { "name": "tag.tw" },
-                        "2": { "name": "color-value.tag.tw" },
+                        "2": { "name": "rgb-hex-value.tag.tw" },
                         "1": { "name": "tag.tw" }
                     }
                 }
@@ -142,7 +142,7 @@
             "patterns": [
                 {
                     "name": "definition.timecalc.comment.tw",
-                    "match": "(char:|newline:)\\s*?(\\d+)",
+                    "match": "(char\\s*?:|newline\\s*?:)\\s*?(\\d+)",
                     "captures": {
                         "1": { "name": "parameter.timecalc.comment.tw" },
                         "0": { "name": "constant.numeric.tw" }
@@ -154,7 +154,7 @@
             "patterns": [
                 {
                     "name": "meta.custom.definition.timecalc.comment.tw",
-                    "begin": "(custom)(\\s*:\\s*)(\\{)",
+                    "begin": "(custom\\s*?:)\\s*?(\\{)",
                     "beginCaptures": {
                         "1": { "name": "custom.timecalc.comment.tw" }
                     },

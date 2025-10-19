@@ -11,7 +11,8 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onLanguage:typewriter"
+        "onLanguage:typewriter",
+        "onLanguage:typewriter-hover"
     ],
     "main": "./client/extension.js",
     "contributes": {
@@ -25,6 +26,20 @@
         "configurationDefaults": {
             "editor.tokenColorCustomizations": {
                 "textMateRules": [
+                    {
+                        "scope": "text.plain.twh",
+                        "settings": {
+                            "foreground": "#CCCCCC",
+                            "fontStyle": ""
+                        }
+                    },
+                    {
+                        "scope": "char-token.tag.twh",
+                        "settings": {
+                            "foreground": "#ffd23e",
+                            "fontStyle": "bold"
+                        }
+                    },
                     {
                         "scope": "custom.timecalc.comment.tw",
                         "settings": {
@@ -45,9 +60,9 @@
                         }
                     },
                     {
-                        "scope": "color-value.tag.tw",
+                        "scope": "rgb-hex-value.tag.tw",
                         "settings": {
-                            "foreground": "#e59cff"
+                            "foreground": "#f27aff"
                         }
                     },
                     {
@@ -101,6 +116,17 @@
                     ".tw"
                 ],
                 "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "typewriter-hover",
+                "aliases": [
+                    "Typewriter Hover",
+                    "typewriter-hover"
+                ],
+                "extensions": [
+                    ".twh"
+                ],
+                "configuration": "./language-configuration.json"
             }
         ],
         "grammars": [
@@ -108,6 +134,11 @@
                 "language": "typewriter",
                 "scopeName": "source.tw",
                 "path": "./syntaxes/typewriter.tmLanguage.json"
+            },
+            {
+                "language": "typewriter-hover",
+                "scopeName": "source.twh",
+                "path": "./syntaxes/typewriterHover.tmLanguage.json"
             }
         ]
     },

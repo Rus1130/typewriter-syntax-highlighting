@@ -1,0 +1,67 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "TypewriterHover",
+	"patterns": [
+        { "include": "#tokens" },
+        { "include": "#tags" },
+        { "include": "#number" },
+        { "include": "#fore-back-ground" }
+	],
+    "repository": {
+        "fore-back-ground": {
+            "patterns": [
+                {
+                    "name": "rgb-hex-value.tag.tw",
+                    "match": "(color: )(#?.*)",
+                    "captures": {
+                        "1": { "name": "text.plain.twh" },
+                        "2": { "name": "rgb-hex-value.tag.tw" }
+                    }
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.tw",
+                    "match": "\\b\\d+\\b"
+                }
+            ]
+        },
+        "tokens": {
+            "patterns": [
+                {
+                    "name": "char-token.tag.twh",
+                    "match": "(Token: )((?!\\[).*)",
+                    "captures": {
+                        "1": { "name": "text.plain.twh" },
+                        "2": { "name": "char-token.tag.twh" }
+                    }
+                }
+            ]
+        },
+        "tags": {
+            "patterns": [
+                {
+                "name": "tag.tw",
+                "match": "(?<!\\\\)\\[(newline|linebreak|sleep|speed|newpage|speeddefault|function|color|background|resetcolor|resetbg|tab)(?:\\s+(\\d+))?(?<!\\\\)\\]",
+                    "captures": {
+                        "0": { "name": "tag.tw" },
+                        "1": { "name": "tag.tw" },
+                        "2": { "name": "constant.numeric.tw" }
+                    }
+                },
+                {
+                    "name": "tag.color.tw",
+                    "match": "((?<!\\\\)\\[color|background)\\s+(#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})|(\\d{1,3}\\s+\\d{1,3}\\s+\\d{1,3}))((?<!\\\\)\\])",
+                    "captures": {
+                        "0": { "name": "tag.tw" },
+                        "2": { "name": "rgb-hex-value.tag.tw" },
+                        "1": { "name": "tag.tw" }
+                    }
+                }
+            ]
+        }
+    },
+    "scopeName": "source.twh"
+}

@@ -7,6 +7,7 @@ const {
     InsertTextFormat
 } = require("vscode-languageserver/node");
 const { TextDocument } = require("vscode-languageserver-textdocument");
+const e = require("cors");
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -25,6 +26,8 @@ connection.onInitialize(() => ({
 const TIME_CALC = new Map();
 const TAG_TOKENS = new Map();
 const LINE_DURATIONS = new Map();
+const FOREGROUND_COLORS = new Map();
+const BACKGROUND_COLORS = new Map();
 
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
@@ -97,12 +100,28 @@ function tokenizeLine(tagTokens, textLine, lineNumber) {
     return parsedLine;
 }
 
+function msToReadable(ms) {
+    // convert it to hours, minutes, seconds, milliseconds
+    // only display hours and minutes and seconds if they are non-zero
+    const hours = Math.floor(ms / 3600000);
+    const minutes = Math.floor((ms % 3600000) / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    const milliseconds = ms % 1000;
+    let parts = [];
+    if (hours > 0) parts.push(`${hours} hr${hours !== 1 ? 's' : ''}`);
+    if (minutes > 0) parts.push(`${minutes} min${minutes !== 1 ? 's' : ''}`);
+    if (seconds > 0) parts.push(`${seconds} sec${seconds !== 1 ? 's' : ''}`);
+    if (milliseconds > 0) parts.push(`${milliseconds} ms`);
+    return parts.join(', ');
+}
+
 connection.onHover((params) => {
     const uri = params.textDocument.uri;
     const document = documents.get(uri);
     const text = document.getText();
     const tagTokens = TAG_TOKENS.get(uri) || [];
     const { line, character } = params.position;
+    const lines = text.split(/\r?\n/g);
 
     // --- 1. Ignore comments ({{# ... #}}) ---
     const commentPattern = /\{\{#([\s\S]*?)#\}\}/g;
@@ -145,37 +164,93 @@ connection.onHover((params) => {
         return character >= t.start && character <= t.end;
     });
 
-    if(!timecalc) return null;
     if(!currentToken) return null;
+
+    let lineDuration = LINE_DURATIONS.get(uri)[line];
+
+    let atLeastFileDuration = false;
+    let fileDuration = 0;
+    const lineDurations = LINE_DURATIONS.get(uri);
+    if(lineDurations){
+        for(let ld of lineDurations){ 
+            fileDuration += ld.duration;
+            if(ld.atLeast) atLeastFileDuration = true;
+        }
+    }
+
+    const lineStartOffset = lines
+        .slice(0, line)
+        .reduce((acc, l) => acc + l.length + 1, 0);
+    const index = lineStartOffset + character;
+
+    let foreground = FOREGROUND_COLORS.get(uri)[index];
+    let background = BACKGROUND_COLORS.get(uri)[index];
+
+    if(currentToken.name){
+        foreground = "none";
+        background = "none";
+    }
+
+    if(!timecalc) return {
+        contents: {
+            kind: 'markdown',
+            value: [
+                "```typewriter-hover",
+                `Token: ${displayFullToken(currentToken)}`,
+                `Speed: unknown (no timecalc defined)`,
+                `Foreground color: ${foreground}`,
+                `Background color: ${background}`,
+                "```",
+            ].join("\n")
+        }
+    };
+
+    let tokenSpeed = calculateTokenTime(timecalc, currentToken);
 
     if(timecalc.char === undefined || timecalc.newline === undefined) return {
         contents: {
             kind: 'markdown',
-            value: 'Not enough info to calculate time.'
+            value: [
+                "```typewriter-hover",
+                `Token: ${displayFullToken(currentToken)}`,
+                `Speed: unknown (timecalc missing required properties)`,
+                `Foreground color: ${foreground}  `,
+                `Background color: ${background}  `,
+                "```",
+            ].join("\n")
         }
     }
 
-    let tokenSpeed = calculateTokenTime(timecalc, currentToken);
-
-    let lineDuration = LINE_DURATIONS.get(uri)[line];
     return {
         contents: {
             kind: 'markdown',
             value: [
-                "```text",
-                `Token: ${wrapWithWhitespaceType(tokenSpeed.token)}`,
+                "```typewriter-hover",
+                `Token: ${displayFullToken(currentToken)}`,
                 `Speed: ${tokenSpeed.speed} ms`,
-                "\u00A0",
+                `Foreground color: ${foreground}`,
+                `Background color: ${background}`,
                 "```",
-                "-----",
-                "```text",
-                "\u00A0",
-                `Line duration: ${lineDuration.atLeast ? "at least" : ""} ${lineDuration.duration} ms`,
-                "```"
+                " ",
+                `---`,
+                " ",
+                "**These times will not be accurate if there are escaped characters (not escaped tags) in the line or file.**  ",
+                "```typewriter-hover",
+                `Line duration: ${lineDuration.atLeast ? "at least " : ""}${msToReadable(lineDuration.duration)}`,
+                `File duration: ${atLeastFileDuration  ? "at least " : ""}${msToReadable(fileDuration)}`,
+                "```",
             ].join("\n")
         }
     }
 });
+
+function displayFullToken(token){
+    if(token.char) return wrapWithWhitespaceType(token.char);
+    else {
+        if(token.args.length > 0) return `[${token.name} ${token.args.join(" ")}]`
+        else return `[${token.name}]`
+    }
+}
 
 function wrapWithWhitespaceType(char) {
     let type = null;
@@ -220,6 +295,12 @@ function calculateTokenTime(timecalc, token){
         token: analyzedToken
     };
 }
+
+function lineCharToOffset(lines, lineIndex, charIndex) {
+    let offset = 0;
+    for (let i = 0; i < lineIndex; i++) offset += lines[i].length + 1; // +1 for newline
+    return offset + charIndex;
+}
  
 documents.onDidChangeContent(change => {
     const text = change.document.getText();
@@ -228,6 +309,13 @@ documents.onDidChangeContent(change => {
 
     TAG_TOKENS.set(uri, []);
     LINE_DURATIONS.set(uri, []);
+    FOREGROUND_COLORS.set(uri, []);
+    BACKGROUND_COLORS.set(uri, []);
+
+    let foregroundColors = new Array(text.length).fill("default");
+    let backgroundColors = new Array(text.length).fill("default");
+
+    const diagnostics = [];
 
     const timecalcPattern = /\{\{#timecalc([\s\S]*?)#\}\}/g;
 
@@ -274,13 +362,10 @@ documents.onDidChangeContent(change => {
         }
     }
 
-
-    const diagnostics = [];
-
     lines.forEach((line, i) => {
         let match;
         // Matches tags like [sleep 700], [speed 150], [color #aa0000], [color 255 0 255], etc.
-        const tagPattern = /\[([a-zA-Z]+)(?:\s+([^\]]+))?\]/g;
+        const tagPattern = /(?<!\\)\[([a-zA-Z]+)(?:\s+([^\]]+))?\]/g;
 
         while ((match = tagPattern.exec(line)) !== null) {
             const fullTag = match[0];
@@ -373,9 +458,45 @@ documents.onDidChangeContent(change => {
                         source: 'typewriter-lsp'
                     });
                 }
+
+                let color = argStr;
+
+                if (isRGB) {
+                    const r = Number(args[0]).toString(16).padStart(2, '0');
+                    const g = Number(args[1]).toString(16).padStart(2, '0');
+                    const b = Number(args[2]).toString(16).padStart(2, '0');
+                    color = `#${r}${g}${b}`;
+                }
+
+                if (tagName === "color") {
+                    const offset = lineCharToOffset(lines, i, startPos);
+                    for (let i = offset; i < foregroundColors.length; i++) {
+                        foregroundColors[i] = color;
+                    }
+                } else if (tagName === "background") {
+                    const offset = lineCharToOffset(lines, i, startPos);
+                    for (let i = offset; i < backgroundColors.length; i++) {
+                        backgroundColors[i] = color;
+                    }
+                }
+            }
+
+            if (tagName === "resetcolor") {
+                const offset = lineCharToOffset(lines, i, startPos);
+                for (let i = offset; i < foregroundColors.length; i++) {
+                    foregroundColors[i] = "default";
+                }
+            } else if (tagName === "resetbg") {
+                const offset = lineCharToOffset(lines, i, startPos);
+                for (let i = offset; i < backgroundColors.length; i++) {
+                    backgroundColors[i] = "default";
+                }
             }
         }   
     })
+
+    FOREGROUND_COLORS.set(uri, foregroundColors);
+    BACKGROUND_COLORS.set(uri, backgroundColors);
 
     if (TIME_CALC.has(uri)) {
         const timecalc = TIME_CALC.get(uri);
