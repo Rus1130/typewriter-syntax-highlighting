@@ -26,8 +26,11 @@ connection.onInitialize(() => ({
 const TIME_CALC = new Map();
 const TAG_TOKENS = new Map();
 const LINE_DURATIONS = new Map();
+
 const FOREGROUND_COLORS = new Map();
 const BACKGROUND_COLORS = new Map();
+
+const TOKEN_SPEEDS = new Map();
 
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
@@ -73,28 +76,55 @@ connection.onCompletion((params) => {
     }));
 });
 
+// function tokenizeLine(tagTokens, textLine, lineNumber) {
+//     const tokensOnLine = tagTokens.filter(t => t.line === lineNumber);
+//     const parsedLine = [];
+
+//     for (let i = 0; i < textLine.length; i++) {
+//         const char = textLine[i];
+
+//         // check if this character belongs to a known tag
+//         const tag = tokensOnLine.find(t => i >= t.start && i <= t.end);
+
+//         if (tag) {
+//             // only push tag once (when we hit the start)
+//             if (!parsedLine.includes(tag)) {
+//                 parsedLine.push(tag);
+//             }
+//             i = tag.end;
+//             continue;
+//         }
+
+//         // normal non-tag character
+//         if(char !== '\n' && char !== '\r') parsedLine.push({ char, start: i, end: i, line: lineNumber });
+//     }
+
+//     return parsedLine;
+// }
 function tokenizeLine(tagTokens, textLine, lineNumber) {
-    const tokensOnLine = tagTokens.filter(t => t.line === lineNumber);
+    const tokensOnLine = tagTokens
+        .filter(t => t.line === lineNumber)
+        .sort((a, b) => a.start - b.start);
+
     const parsedLine = [];
+    let tagIndex = 0;
+    let i = 0;
 
-    for (let i = 0; i < textLine.length; i++) {
-        const char = textLine[i];
+    while (i < textLine.length) {
+        const tag = tokensOnLine[tagIndex];
 
-        // check if this character belongs to a known tag
-        const tag = tokensOnLine.find(t => i >= t.start && i <= t.end);
-
-        if (tag) {
-            // only push tag once (when we hit the start)
-            if (!parsedLine.includes(tag)) {
-                parsedLine.push(tag);
+        if (tag && i === tag.start) {
+            // push tag once
+            parsedLine.push(tag);
+            i = tag.end; // end is exclusive, so safe to jump
+            tagIndex++;
+        } else {
+            const char = textLine[i];
+            if (char !== '\n' && char !== '\r') {
+                parsedLine.push({ char, start: i, end: i, line: lineNumber });
             }
-            // skip ahead to tag end so we don’t repeat characters
-            i = tag.end;
-            continue;
+            i++;
         }
-
-        // normal non-tag character
-        if(char !== '\n' && char !== '\r') parsedLine.push({ char, start: i, end: i });
     }
 
     return parsedLine;
@@ -186,6 +216,10 @@ connection.onHover((params) => {
     let foreground = FOREGROUND_COLORS.get(uri)[index];
     let background = BACKGROUND_COLORS.get(uri)[index];
 
+    let speedArray = TOKEN_SPEEDS.get(uri);
+    let currentSpeedOverride = speedArray[`${currentToken.line}:${currentToken.start}`];
+
+
     if(currentToken.name){
         foreground = "none";
         background = "none";
@@ -206,6 +240,10 @@ connection.onHover((params) => {
     };
 
     let tokenSpeed = calculateTokenTime(timecalc, currentToken);
+    if(['speeddefault', 'speed'].includes(currentToken?.name)) currentSpeedOverride = 0;
+    if(['sleep', 'tab'].includes(currentToken?.name)) currentSpeedOverride = -1;
+
+    if(currentSpeedOverride !== -1) tokenSpeed.speed = currentSpeedOverride;
 
     if(timecalc.char === undefined || timecalc.newline === undefined) return {
         contents: {
@@ -286,15 +324,15 @@ function calculateTokenTime(timecalc, token){
                 characterSpeed = 0;
             }
         }
-        
     }
-
 
     return {
         speed: characterSpeed,
         token: analyzedToken
     };
 }
+
+let tokenSpeedOverride = -1;
 
 function lineCharToOffset(lines, lineIndex, charIndex) {
     let offset = 0;
@@ -311,6 +349,7 @@ documents.onDidChangeContent(change => {
     LINE_DURATIONS.set(uri, []);
     FOREGROUND_COLORS.set(uri, []);
     BACKGROUND_COLORS.set(uri, []);
+    TOKEN_SPEEDS.set(uri, []);
 
     let foregroundColors = new Array(text.length).fill("default");
     let backgroundColors = new Array(text.length).fill("default");
@@ -412,6 +451,7 @@ documents.onDidChangeContent(change => {
                 }
                 continue;
             }
+
             if (tagName === "sleep" || tagName === "speed") {
                 if(args[0] === undefined) {
                     diagnostics.push({
@@ -427,7 +467,6 @@ documents.onDidChangeContent(change => {
                 }
 
                 if (args.length > 1 || (args[0] && isNaN(Number(args[0])))) {
-                    let defaultAmount = tagName === "sleep" ? 1000 : 50;
                     diagnostics.push({
                         severity: 2,
                         range: {
@@ -486,12 +525,16 @@ documents.onDidChangeContent(change => {
                 for (let i = offset; i < foregroundColors.length; i++) {
                     foregroundColors[i] = "default";
                 }
-            } else if (tagName === "resetbg") {
+            }
+            
+            if (tagName === "resetbg") {
                 const offset = lineCharToOffset(lines, i, startPos);
                 for (let i = offset; i < backgroundColors.length; i++) {
                     backgroundColors[i] = "default";
                 }
             }
+
+
         }   
     })
 
@@ -501,6 +544,7 @@ documents.onDidChangeContent(change => {
     if (TIME_CALC.has(uri)) {
         const timecalc = TIME_CALC.get(uri);
         const lineDurations = [];
+        const tokenSpeeds = {};
 
         for (let lineNum = 0; lineNum < lines.length; lineNum++) {
             const lineText = lines[lineNum];
@@ -510,7 +554,16 @@ documents.onDidChangeContent(change => {
             let atLeastFlag = false;
 
             for (let token of tokens) {
+                tokenSpeeds[`${token.line}:${token.start}`] = tokenSpeedOverride
                 const result = calculateTokenTime(timecalc, token);
+                if(tokenSpeedOverride !== -1) result.speed = tokenSpeedOverride;
+
+                if(token?.name === "speed"){
+                    tokenSpeedOverride = Number(token.args[0]);
+                } else if(token?.name === "speeddefault"){
+                    tokenSpeedOverride = -1;
+                }
+
                 if (typeof result.speed === 'number' && !isNaN(result.speed)) {
                     totalLineTime += result.speed;
                 } else {
@@ -524,6 +577,7 @@ documents.onDidChangeContent(change => {
         }
 
         LINE_DURATIONS.set(uri, lineDurations);
+        TOKEN_SPEEDS.set(uri, tokenSpeeds);
     }
 
 
