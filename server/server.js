@@ -272,7 +272,7 @@ connection.onHover((params) => {
                 " ",
                 `---`,
                 " ",
-                "**These times will not be accurate if there are escaped characters (not escaped tags) in the line or file.**  ",
+                "**These times are most likely not accurate.**  ",
                 "```typewriter-hover",
                 `Line duration: ${lineDuration.atLeast ? "at least " : ""}${msToReadable(lineDuration.duration)}`,
                 `File duration: ${atLeastFileDuration  ? "at least " : ""}${msToReadable(fileDuration)}`,
