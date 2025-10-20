@@ -7,7 +7,6 @@ const {
     InsertTextFormat
 } = require("vscode-languageserver/node");
 const { TextDocument } = require("vscode-languageserver-textdocument");
-const e = require("cors");
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
