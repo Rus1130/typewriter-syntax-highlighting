@@ -339,7 +339,84 @@ function lineCharToOffset(lines, lineIndex, charIndex) {
     for (let i = 0; i < lineIndex; i++) offset += lines[i].length + 1; // +1 for newline
     return offset + charIndex;
 }
- 
+
+function parseTimecalcBlock(blockContent) {
+    const lines = blockContent.split(/\r?\n/);
+    const result = {};
+    const stack = [result];
+    const path = [];
+
+    let errors = [];
+
+    const getContext = () => 'timecalc.' + (path.join('.') || 'root');
+
+    const addError = (line, col, message) => {
+        errors.push({ line, col, message, context: getContext() });
+    };
+
+    const parseKey = (key, lineIdx, colIdx) => {
+        key = key.trim().replace(/^"|"$/g, '');
+        if (/^-?\d+(\.\d+)?$/.test(key)) return Number(key);
+        return key;
+    };
+
+    const parseValue = (value, lineIdx, colIdx) => {
+        value = value.trim();
+        if (value === '') return null;
+        if (/^-?\d+(\.\d+)?$/.test(value)) return Number(value);
+        if (value.startsWith('"') && value.endsWith('"')) return value.slice(1, -1);
+        addError(lineIdx, colIdx, `Invalid value: ${value}`);
+        return null;
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line || line.startsWith('{{#') || line.startsWith('#}}')) continue;
+
+        // End of object
+        if (line === '}') {
+            if (stack.length > 1) {
+                stack.pop();
+                path.pop();
+            } else {
+                addError(i, 0, "Unexpected '}' without matching '{'");
+            }
+            continue;
+        }
+
+        // Match key: value
+        const keyMatch = line.match(/^([A-Za-z0-9_"]+)\s*:(.*)$/);
+        if (!keyMatch) {
+            addError(i, 0, `Invalid syntax: "${line}"`);
+            continue;
+        }
+
+        let key = parseKey(keyMatch[1], i, 0);
+        let value = keyMatch[2].trim();
+
+        // Start of nested block
+        if (value === '{') {
+            const newObj = {};
+            stack[stack.length - 1][key] = newObj;
+            stack.push(newObj);
+            path.push(key);
+            continue;
+        }
+
+        // Simple value
+        const parsedValue = parseValue(value, i, keyMatch[1].length + 1);
+        if (parsedValue !== null) {
+            stack[stack.length - 1][key] = parsedValue;
+        }
+    }
+
+    if (stack.length > 1) {
+        addError(lines.length, 0, "Missing closing '}' for nested block");
+    }
+
+    return { parsed: result, errors };
+}
+
 documents.onDidChangeContent(change => {
     const text = change.document.getText();
     const lines = text.split(/\r?\n/g);
@@ -356,6 +433,18 @@ documents.onDidChangeContent(change => {
 
     const diagnostics = [];
 
+    function sendDiagnostic(severity, line, startChar, endChar, message) {
+        diagnostics.push({
+            severity: severity,
+            range: {
+                start: { line: line, character: startChar },
+                end: { line: line, character: endChar }
+            },
+            message: message,
+            source: 'typewriter-lsp'
+        });
+    }
+
     const timecalcPattern = /\{\{#timecalc([\s\S]*?)#\}\}/g;
 
     // if it has a timecalc comment, create the entry if it doesn't exist
@@ -369,35 +458,40 @@ documents.onDidChangeContent(change => {
     while ((blockMatch = timecalcPattern.exec(text)) !== null) {
         const blockContent = blockMatch[1].trim();
         const blockStart = blockMatch.index; // where the block begins in the file
-
-        // Convert block to JSON-like string
-        let jsonStr = blockContent
-            // add quotes around keys
-            .replace(/^(\s*)([a-zA-Z0-9_]+):/gm, '$1"$2":')
-            // replace single quotes with double quotes
-            .replace(/'/g, '"')
-            // add commas at line ends if missing and not before } or {
-            .replace(/([0-9"])\s*$/gm, '$1,')
-            .replace(/,(\s*[}\]])/g, '$1'); // remove trailing commas before closing braces
-
+        
         try {
-            const parsed = JSON.parse(`{${jsonStr}}`);
-            TIME_CALC.set(uri, parsed);
+            const parsed = parseTimecalcBlock(blockContent);
+            if(parsed.errors.length !== 0) throw new Error(parsed.errors[0].message);
+
+            if(!parsed.parsed.char) throw new Error("Missing required 'char' property in timecalc.");
+            if(typeof parsed.parsed.char !== 'number') throw new Error("'char' property in timecalc must be a number.");
+
+            if(!parsed.parsed.newline) throw new Error("Missing required 'newline' property in timecalc.");
+            if(typeof parsed.parsed.newline !== 'number') throw new Error("'newline' property in timecalc must be a number.");
+
+            if(!parsed.parsed.custom) throw new Error("Missing required 'custom' property in timecalc.");
+            if(typeof parsed.parsed.custom !== 'object') throw new Error("'custom' property in timecalc must be an object.");
+
+            for(const [key, value] of Object.entries(parsed.parsed.custom)) {
+                if(typeof value !== 'number') {
+                    throw new Error(`Custom character '${key}' in timecalc must have a numeric value.`);
+                }
+            }
+
+            TIME_CALC.set(uri, parsed.parsed);   
         } catch (e) {
             const before = text.slice(0, blockStart);
             const line = before.split(/\r?\n/).length - 1;
             const lineStart = before.lastIndexOf('\n') + 1;
             const colStart = text.indexOf('timecalc', lineStart) - lineStart;
 
-            diagnostics.push({
-                severity: 1,
-                range: {
-                    start: { line, character: colStart },
-                    end: { line, character: colStart + 'timecalc'.length }
-                },
-                message: `Failed to parse timecalc block: ${e.message}`,
-                source: 'typewriter-lsp'
-            });
+            sendDiagnostic(
+                DiagnosticSeverity.Error,
+                line,
+                colStart,
+                colStart + 'timecalc'.length,
+                e.message
+            );
         }
     }
 
@@ -424,58 +518,50 @@ documents.onDidChangeContent(change => {
             const knownTag = TAGS.some(t => t.label === tagName);
 
             if (!knownTag) {
-                diagnostics.push({
-                    severity: 2,
-                    range: {
-                        start: { line: i, character: startPos },
-                        end: { line: i, character: endPos }
-                    },
-                    message: `Unknown tag: [${tagName}].`,
-                    source: 'typewriter-lsp'
-                });
+                sendDiagnostic(
+                    DiagnosticSeverity.Warning,
+                    i,
+                    startPos,
+                    endPos,
+                    `Unknown tag: [${tagName}].`
+                );
                 continue;
             }
 
             // --- argument validation ---
             if(tagName === "tab") {
                 if(args[0] !== undefined && (isNaN(Number(args[0])) || Number(args[0]) < 1)) {
-                    diagnostics.push({
-                        severity: 2,
-                        range: {
-                            start: { line: i, character: startPos },
-                            end: { line: i, character: endPos }
-                        },
-                        message: `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
-                        source: 'typewriter-lsp'
-                    });
+                    sendDiagnostic(
+                        DiagnosticSeverity.Warning,
+                        i,
+                        startPos,
+                        endPos,
+                        `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
+                    );
                 }
                 continue;
             }
 
             if (tagName === "sleep" || tagName === "speed") {
                 if(args[0] === undefined) {
-                    diagnostics.push({
-                        severity: 2,
-                        range: {
-                            start: { line: i, character: startPos },
-                            end: { line: i, character: endPos }
-                        },
-                        message: `Missing argument in [${tagName}].`,
-                        source: 'typewriter-lsp'
-                    });
+                    sendDiagnostic(
+                        DiagnosticSeverity.Warning,
+                        i,
+                        startPos,
+                        endPos,
+                        `Missing argument in [${tagName}].`,
+                    );
                     continue;
                 }
 
                 if (args.length > 1 || (args[0] && isNaN(Number(args[0])))) {
-                    diagnostics.push({
-                        severity: 2,
-                        range: {
-                            start: { line: i, character: startPos },
-                            end: { line: i, character: endPos }
-                        },
-                        message: `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
-                        source: 'typewriter-lsp'
-                    });
+                    sendDiagnostic(
+                        DiagnosticSeverity.Warning,
+                        i,
+                        startPos,
+                        endPos,
+                        `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
+                    );
                 }
             }
 
@@ -487,15 +573,13 @@ documents.onDidChangeContent(change => {
                     args.every(a => /^\d+$/.test(a) && Number(a) >= 0 && Number(a) <= 255);
 
                 if (!isHex && !isRGB) {
-                    diagnostics.push({
-                        severity: 1,
-                        range: {
-                            start: { line: i, character: startPos },
-                            end: { line: i, character: endPos }
-                        },
-                        message: `Invalid color format in [${tagName} ${argStr}]. Expected “[${tagName} #RRGGBB]” or “[${tagName} R G B]”.`,
-                        source: 'typewriter-lsp'
-                    });
+                    sendDiagnostic(
+                        DiagnosticSeverity.Error,
+                        i,
+                        startPos,
+                        endPos,
+                        `Invalid color format in [${tagName} ${argStr}]. Expected “[${tagName} #RRGGBB]” or “[${tagName} R G B]”.`,
+                    );
                 }
 
                 let color = argStr;
