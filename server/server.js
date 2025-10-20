@@ -75,31 +75,6 @@ connection.onCompletion((params) => {
     }));
 });
 
-// function tokenizeLine(tagTokens, textLine, lineNumber) {
-//     const tokensOnLine = tagTokens.filter(t => t.line === lineNumber);
-//     const parsedLine = [];
-
-//     for (let i = 0; i < textLine.length; i++) {
-//         const char = textLine[i];
-
-//         // check if this character belongs to a known tag
-//         const tag = tokensOnLine.find(t => i >= t.start && i <= t.end);
-
-//         if (tag) {
-//             // only push tag once (when we hit the start)
-//             if (!parsedLine.includes(tag)) {
-//                 parsedLine.push(tag);
-//             }
-//             i = tag.end;
-//             continue;
-//         }
-
-//         // normal non-tag character
-//         if(char !== '\n' && char !== '\r') parsedLine.push({ char, start: i, end: i, line: lineNumber });
-//     }
-
-//     return parsedLine;
-// }
 function tokenizeLine(tagTokens, textLine, lineNumber) {
     const tokensOnLine = tagTokens
         .filter(t => t.line === lineNumber)
@@ -259,6 +234,8 @@ connection.onHover((params) => {
         }
     }
 
+    // SHIT IS FUCKED UP ===============================
+
     return {
         contents: {
             kind: 'markdown',
@@ -385,7 +362,7 @@ function parseTimecalcBlock(blockContent) {
         }
 
         // Match key: value
-        const keyMatch = line.match(/^([A-Za-z0-9_"]+)\s*:(.*)$/);
+        const keyMatch = line.match(/^(.+)\s*:(.*)$/);
         if (!keyMatch) {
             addError(i, 0, `Invalid syntax: "${line}"`);
             continue;
