@@ -190,7 +190,8 @@ connection.onHover((params) => {
 
     let currentLine = tokenizeLine(tagTokens, lineText, line);
     let currentToken = currentLine.find(t => {
-        return character >= t.start && character <= t.end;
+        if(t.name) return character >= t.start && character <= (t.end-1);
+        else return character >= t.start && character <= t.end;
     });
 
     if(!currentToken) return null;
