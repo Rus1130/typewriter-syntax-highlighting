@@ -30,6 +30,7 @@ const FOREGROUND_COLORS = new Map();
 const BACKGROUND_COLORS = new Map();
 
 const TOKEN_SPEEDS = new Map();
+const UNKNOWN_TAGS = new Map();
 
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
@@ -44,6 +45,7 @@ const TAGS = [
     { label: "resetcolor", detail: "Resets the text color to default.", documentation: "[resetcolor]" },
     { label: "resetbg", detail: "Resets the background color to default.", documentation: "[resetbg]" },
     { label: "tab", detail: "Inserts 4 spaces. Optional number parameter to input a different number of spaces.", documentation: "[tab]\n[tab 10]" },
+    { label: "hr", detail: "Inserts a horizontal rule (a line across the page).", documentation: "[hr]" },
 ];
 
 connection.onCompletion((params) => {
@@ -200,6 +202,12 @@ connection.onHover((params) => {
         background = "none";
     }
 
+    let unknownTokens = UNKNOWN_TAGS.get(uri);
+    if(unknownTokens && currentToken.name && unknownTokens[`${currentToken.start}:${currentToken.end}:${currentToken.name}`]){
+        return null;
+    }
+
+
     if(!timecalc) return {
         contents: {
             kind: 'markdown',
@@ -233,8 +241,6 @@ connection.onHover((params) => {
             ].join("\n")
         }
     }
-
-    // SHIT IS FUCKED UP ===============================
 
     return {
         contents: {
@@ -404,6 +410,7 @@ documents.onDidChangeContent(change => {
     FOREGROUND_COLORS.set(uri, []);
     BACKGROUND_COLORS.set(uri, []);
     TOKEN_SPEEDS.set(uri, []);
+    UNKNOWN_TAGS.set(uri, {});
 
     let foregroundColors = new Array(text.length).fill("default");
     let backgroundColors = new Array(text.length).fill("default");
@@ -500,8 +507,13 @@ documents.onDidChangeContent(change => {
                     i,
                     startPos,
                     endPos,
-                    `Unknown tag: [${tagName}].`
+                    `Unknown tag: [${tagName}]`
                 );
+
+                let unkownTags = UNKNOWN_TAGS.get(uri);
+                unkownTags[`${startPos}:${endPos}:${tagName}`] = true;
+
+                UNKNOWN_TAGS.set(uri, unkownTags);
                 continue;
             }
 
