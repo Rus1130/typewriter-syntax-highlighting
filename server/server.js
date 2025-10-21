@@ -12,16 +12,19 @@ const { Typewriter3 } = require("../src/typewriter");
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
-connection.onInitialize(() => ({
-    capabilities: {
-        textDocumentSync: documents.syncKind,
-        completionProvider: {
-            triggerCharacters: ['['], // 👈 trigger IntelliSense when > is typed
-        },
-        colorProvider: true,
-        hoverProvider: true,
-    }
-}));
+connection.onInitialize(() => {
+    console.log("Typewriter Language Server initialized.");
+    return {
+            capabilities: {
+            textDocumentSync: documents.syncKind,
+            completionProvider: {
+                triggerCharacters: ['['], // 👈 trigger IntelliSense when > is typed
+            },
+            colorProvider: true,
+            hoverProvider: true,
+        }
+    };
+});
 
 const TIME_CALC = new Map();
 const TAG_TOKENS = new Map();
