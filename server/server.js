@@ -46,6 +46,7 @@ const TAGS = [
     { label: "resetbg", detail: "Resets the background color to default.", documentation: "[resetbg]" },
     { label: "tab", detail: "Inserts 4 spaces. Optional number parameter to input a different number of spaces.", documentation: "[tab]\n[tab 10]" },
     { label: "hr", detail: "Inserts a horizontal rule (a line across the page).", documentation: "[hr]" },
+    { label: "invert", detail: "Inverts the foreground and background colors.", documentation: "[invert]" },
 ];
 
 connection.onCompletion((params) => {
@@ -107,6 +108,7 @@ function tokenizeLine(tagTokens, textLine, lineNumber) {
 }
 
 function msToReadable(ms) {
+    if(ms <= 0) return "0 ms";
     // convert it to hours, minutes, seconds, milliseconds
     // only display hours and minutes and seconds if they are non-zero
     const hours = Math.floor(ms / 3600000);
