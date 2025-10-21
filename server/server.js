@@ -32,6 +32,8 @@ const BACKGROUND_COLORS = new Map();
 const TOKEN_SPEEDS = new Map();
 const UNKNOWN_TAGS = new Map();
 
+const COLORS_INVERTED = new Map();
+
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
     { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines. However, it has the same speed as one newline.", documentation: "[linebreak]" },
@@ -413,6 +415,7 @@ documents.onDidChangeContent(change => {
     BACKGROUND_COLORS.set(uri, []);
     TOKEN_SPEEDS.set(uri, []);
     UNKNOWN_TAGS.set(uri, {});
+    COLORS_INVERTED.set(uri, {});
 
     let foregroundColors = new Array(text.length).fill("default");
     let backgroundColors = new Array(text.length).fill("default");
@@ -608,8 +611,6 @@ documents.onDidChangeContent(change => {
                     backgroundColors[i] = "default";
                 }
             }
-
-
         }   
     })
 
