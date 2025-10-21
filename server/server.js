@@ -18,7 +18,7 @@ connection.onInitialize(() => {
             capabilities: {
             textDocumentSync: documents.syncKind,
             completionProvider: {
-                triggerCharacters: ['['], // 👈 trigger IntelliSense when > is typed
+                triggerCharacters: ['['],
             },
             colorProvider: true,
             hoverProvider: true,
