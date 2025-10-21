@@ -27,10 +27,30 @@ function activate(context) {
         clientOptions
     );
 
-    // ✅ define disposable before pushing
     const disposable = client.start();
-
     context.subscriptions.push(disposable);
+
+    // ✅ Register the `typewriter.preview` command
+    const previewCommand = vscode.commands.registerCommand("typewriter.preview", async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showErrorMessage("No active Typewriter document to preview.");
+            return;
+        }
+
+        const text = editor.document.getText();
+        const panel = vscode.window.createWebviewPanel(
+            "typewriterPreview",
+            "Typewriter Preview",
+            vscode.ViewColumn.Beside,
+            { enableScripts: true }
+        );
+
+        // Basic preview placeholder — you can replace with your real preview logic
+        panel.webview.html = `hi!`
+    });
+
+    context.subscriptions.push(previewCommand);
 }
 
 function deactivate() {

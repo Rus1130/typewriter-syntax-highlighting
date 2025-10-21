@@ -16,6 +16,21 @@
     ],
     "main": "./client/extension.js",
     "contributes": {
+                "commands": [
+            {
+                "command": "typewriter.preview",
+                "title": "▶ Preview"
+            }
+        ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "typewriter.preview",
+                    "when": "resourceLangId == typewriter",
+                    "group": "navigation@1"
+                }
+            ]
+        },
         "iconThemes": [
             {
                 "id": "typewriter",
