@@ -13,7 +13,7 @@ function activate(context) {
     };
 
     const clientOptions = {
-        documentSelector: [{ scheme: "file", language: "plaintext" }],
+        documentSelector: [{ scheme: "file", language: "typewriter" }],
     };
 
     client = new LanguageClient(
