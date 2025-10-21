@@ -7,6 +7,7 @@ const {
     InsertTextFormat
 } = require("vscode-languageserver/node");
 const { TextDocument } = require("vscode-languageserver-textdocument");
+const { Typewriter3 } = require("../src/typewriter");
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -704,6 +705,24 @@ connection.onDocumentColor(({ textDocument }) => {
     }
 
     return colors;
+});
+
+connection.onRequest("typewriter/render", async (params) => {
+    const { text } = params;
+
+    let typewriter3 = new Typewriter3(text, null, {
+        instant: true,
+        variableOutput: true,
+        charDelay: 1,
+        newlineDelay: 1,
+        defaultTextColor: "#FFFFFF",
+        defaultBackgroundColor: "#000000",
+        newpageText: "--- New Page ---",
+    });
+
+    typewriter3.start();
+
+    return typewriter3.output
 });
 
 // Helper function to convert index → LSP position

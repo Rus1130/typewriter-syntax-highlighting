@@ -18,14 +18,14 @@
     "contributes": {
                 "commands": [
             {
-                "command": "typewriter.preview",
+                "command": "typewriter.showPreview",
                 "title": "▶ Preview"
             }
         ],
         "menus": {
             "editor/title": [
                 {
-                    "command": "typewriter.preview",
+                    "command": "typewriter.showPreview",
                     "when": "resourceLangId == typewriter",
                     "group": "navigation@1"
                 }
