@@ -38,6 +38,8 @@ const UNKNOWN_TAGS = new Map();
 
 const COLORS_INVERTED = new Map();
 
+const WORD_COUNTS = new Map();
+
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
     { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines. However, it has the same speed as one newline.", documentation: "[linebreak]" },
@@ -183,6 +185,8 @@ connection.onHover((params) => {
 
     let lineDuration = LINE_DURATIONS.get(uri)[line];
 
+    const wordCount = WORD_COUNTS.get(uri).toLocaleString();
+
     let atLeastFileDuration = false;
     let fileDuration = 0;
     const lineDurations = LINE_DURATIONS.get(uri);
@@ -226,6 +230,13 @@ connection.onHover((params) => {
                 `Foreground color: ${foreground}`,
                 `Background color: ${background}`,
                 "```",
+                " ",
+                "---",
+                " ",
+                "**Document Stats:**",
+                "```typewriter-hover",
+                `Word count: ${wordCount}`,
+                "```",
             ].join("\n")
         }
     };
@@ -245,6 +256,12 @@ connection.onHover((params) => {
                 `Speed: unknown (timecalc missing required properties)`,
                 `Foreground color: ${foreground}  `,
                 `Background color: ${background}  `,
+                " ",
+                "---",
+                " ",
+                "**Document Stats:**",
+                "```typewriter-hover",
+                `Word count: ${wordCount}`,
                 "```",
             ].join("\n")
         }
@@ -263,11 +280,13 @@ connection.onHover((params) => {
                 " ",
                 `---`,
                 " ",
-                "**These times are most likely not accurate.**  ",
+                "**Document Stats:**",
                 "```typewriter-hover",
                 `Line duration: ${lineDuration.atLeast ? "at least " : ""}${msToReadable(lineDuration.duration)}`,
                 `File duration: ${atLeastFileDuration  ? "at least " : ""}${msToReadable(fileDuration)}`,
+                `Word count: ${wordCount}`,
                 "```",
+                "Note: the durations may not be accurate"
             ].join("\n")
         }
     }
@@ -420,6 +439,16 @@ documents.onDidChangeContent(change => {
     TOKEN_SPEEDS.set(uri, []);
     UNKNOWN_TAGS.set(uri, {});
     COLORS_INVERTED.set(uri, {});
+    WORD_COUNTS.set(uri, 0);
+
+    let wordCount = text
+        .replaceAll(/\{\{#[\s\S]*?#\}\}/g, '')
+        .replaceAll(/(?<!\\)\[.+?(?<!\\)\]/g, ' ')
+        .split(/\s+/)
+
+    wordCount = wordCount.filter(w => w.trim().length > 0);
+
+    WORD_COUNTS.set(uri, wordCount.length);
 
     let foregroundColors = new Array(text.length).fill("default");
     let backgroundColors = new Array(text.length).fill("default");
