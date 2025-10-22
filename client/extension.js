@@ -65,6 +65,7 @@ function updateWebview(panel, htmlContent) {
                 color: white;
                 margin-right: 0;
                 padding-top: 20px;
+                padding-bottom: 20px;
             }
             * {
                 font-family: monospace;
