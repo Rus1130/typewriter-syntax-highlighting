@@ -44,7 +44,7 @@
             "patterns": [
                 {
                 "name": "tag.tw",
-                "match": "(?<!\\\\)\\[(newline|linebreak|sleep|speed|newpage|speeddefault|function|color|background|resetcolor|resetbg|tab|hr|invert)(?:\\s+(\\d+))?(?<!\\\\)\\]",
+                "match": "(?<!\\\\)\\[(newline|linebreak|sleep|speed|newpage|speeddefault|function|color|background|resetcolor|resetbg|tab|hr|invert)((?:\\s+\\d+)*)(?<!\\\\)\\]",
                     "captures": {
                         "0": { "name": "tag.tw" },
                         "1": { "name": "tag.tw" },
