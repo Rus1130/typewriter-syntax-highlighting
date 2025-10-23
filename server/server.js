@@ -43,7 +43,7 @@ const WORD_COUNTS = new Map();
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
     { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines. However, it has the same speed as one newline.", documentation: "[linebreak]" },
-    { label: "speed", detail: "Overrides the current character speed to a number. Option number parameter to not override custom character delays.", documentation: "[speed 70]\n\n{{#does not override custom delays#}}\n[speed 70 0]" },
+    { label: "speed", detail: "Overrides the current character speed to a number. Option number parameter to not override custom character delays.", documentation: "[speed 70]\n\n{{# does not override custom delays #}}\n[speed 70 0]" },
     { label: "sleep", detail: "Pauses typewriter for amount in ms.", documentation: "[sleep 20]" },
     { label: "speeddefault", detail: "Removes the override of the [speed] tag.", documentation: "[speeddefault]" },
     { label: "newpage", detail: "Starts a new page.", documentation: "[newpage]" },
