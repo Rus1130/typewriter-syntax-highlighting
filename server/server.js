@@ -43,7 +43,7 @@ const WORD_COUNTS = new Map();
 const TAGS = [
     { label: "newline", detail: "Inserts a new line.", documentation: "[newline]" },
     { label: "linebreak", detail: "Inserts a line break, which is just 2 newlines. However, it has the same speed as one newline.", documentation: "[linebreak]" },
-    { label: "speed", detail: "Overrides the current character speed to a number.", documentation: "[speed 70]" },
+    { label: "speed", detail: "Overrides the current character speed to a number. Option parameter to keep custom character delays.", documentation: "[speed 70]\n[speed 70 1]" },
     { label: "sleep", detail: "Pauses typewriter for amount in ms.", documentation: "[sleep 20]" },
     { label: "speeddefault", detail: "Removes the override of the [speed] tag.", documentation: "[speeddefault]" },
     { label: "newpage", detail: "Starts a new page.", documentation: "[newpage]" },
@@ -559,38 +559,74 @@ documents.onDidChangeContent(change => {
             if(tagName === "tab") {
                 if(args[0] !== undefined && (isNaN(Number(args[0])) || Number(args[0]) < 1)) {
                     sendDiagnostic(
-                        DiagnosticSeverity.Warning,
+                        DiagnosticSeverity.Error,
                         i,
                         startPos,
                         endPos,
-                        `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
+                        `Invalid numeric argument 0 in [${tagName} ${args.join(" ")}].`,
                     );
                 }
                 continue;
             }
 
-            if (tagName === "sleep" || tagName === "speed") {
+            if (tagName === "sleep") {
                 if(args[0] === undefined) {
                     sendDiagnostic(
-                        DiagnosticSeverity.Warning,
+                        DiagnosticSeverity.Error,
                         i,
                         startPos,
                         endPos,
-                        `Missing argument in [${tagName}].`,
+                        `Missing numeric argument 0 in [${tagName}].`,
                     );
                     continue;
                 }
 
                 if (args.length > 1 || (args[0] && isNaN(Number(args[0])))) {
                     sendDiagnostic(
-                        DiagnosticSeverity.Warning,
+                        DiagnosticSeverity.Error,
                         i,
                         startPos,
                         endPos,
-                        `Invalid numeric argument in [${tagName} ${args.join(" ")}].`,
+                        `Invalid numeric argument 1+ in [${tagName} ${args.join(" ")}].`,
                     );
                 }
             }
+
+            if(tagName === "speed") {
+                if(args[0] === undefined) {
+                    sendDiagnostic(
+                        DiagnosticSeverity.Error,
+                        i,
+                        startPos,
+                        endPos,
+                        `Missing argument 0 in [${tagName}].`,
+                    );
+                    continue;
+                }
+
+                if(isNaN(Number(args[0])) || Number(args[0]) < 0) {
+                    sendDiagnostic(
+                        DiagnosticSeverity.Error,
+                        i,
+                        startPos,
+                        endPos,
+                        `Invalid numeric argument 0 in [${tagName} ${args.join(" ")}].`,
+                    );
+                }
+            }
+
+            if(tagName === "speed"){
+                if(args[1] !== undefined && (Number(args[1]) !== 0 && Number(args[1]) !== 1)){
+                    sendDiagnostic(
+                        DiagnosticSeverity.Error,
+                        i,
+                        startPos,
+                        endPos,
+                        `Numeric argument 1 in [${tagName} ${args.join(" ")}]. Should be 0 or 1.`,
+                    );
+                }
+            }
+
 
             if (tagName === "color" || tagName === "background") {
                 const argStr = args.join(" ");
